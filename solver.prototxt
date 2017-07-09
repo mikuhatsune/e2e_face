@@ -1,0 +1,29 @@
+net: "train_test.prototxt"
+
+#test_iter: 10
+#test_interval: 2000
+display: 100
+average_loss: 500
+
+base_lr: 0.03 #0.0002
+momentum: 0.9
+
+#momentum2: 0.999
+#lr_policy: "fixed"
+#type: "Adam"
+
+lr_policy: "multistep"
+#stepsize: 10000
+stepvalue: 16000
+stepvalue: 24000
+stepvalue: 28000
+gamma: 0.1
+max_iter: 28000
+
+weight_decay: 0.0005
+
+snapshot: 2000
+snapshot_prefix: "model/"
+
+solver_mode: GPU
+type: "SGD"

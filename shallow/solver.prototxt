@@ -1,0 +1,24 @@
+net: "net.prototxt"
+
+#test_iter: 10
+#test_interval: 2000
+display: 100
+average_loss: 500
+
+base_lr: 0.01 #0.0002
+momentum: 0.9
+#momentum2: 0.999
+#lr_policy: "fixed"
+#type: "Adam"
+lr_policy: "step"
+stepsize: 10000
+gamma: 0.7
+max_iter: 30000
+
+weight_decay: 0.0005
+
+snapshot: 5000
+snapshot_prefix: "shallow"
+
+solver_mode: GPU
+type: "SGD"

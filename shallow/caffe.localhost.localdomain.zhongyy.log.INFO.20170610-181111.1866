@@ -1,0 +1,2138 @@
+Log file created at: 2017/06/10 18:11:11
+Running on machine: localhost.localdomain
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+I0610 18:11:11.324195  1866 caffe.cpp:217] Using GPUs 0
+I0610 18:11:11.331286  1866 caffe.cpp:222] GPU 0: GeForce GTX TITAN X
+I0610 18:11:11.664279  1866 solver.cpp:48] Initializing solver from parameters: 
+base_lr: 0.01
+display: 100
+max_iter: 30000
+lr_policy: "step"
+gamma: 0.7
+momentum: 0.9
+weight_decay: 0.0005
+stepsize: 10000
+snapshot: 5000
+snapshot_prefix: "shallow"
+solver_mode: GPU
+device_id: 0
+net: "net.prototxt"
+train_state {
+  level: 0
+  stage: ""
+}
+average_loss: 500
+type: "SGD"
+I0610 18:11:11.664556  1866 solver.cpp:91] Creating training net from net file: net.prototxt
+I0610 18:11:11.665328  1866 net.cpp:322] The NetState phase (0) differed from the phase (1) specified by a rule in layer data
+I0610 18:11:11.665629  1866 net.cpp:58] Initializing net from parameters: 
+name: "face-loc-pro-3"
+state {
+  phase: TRAIN
+  level: 0
+  stage: ""
+}
+layer {
+  name: "data"
+  type: "HDF5Data"
+  top: "I"
+  top: "Id"
+  include {
+    phase: TRAIN
+  }
+  hdf5_data_param {
+    source: "../data/webface.txt"
+    batch_size: 128
+    shuffle: true
+    scale: 0.00390625
+    mirror: true
+  }
+}
+layer {
+  name: "tform/conv1"
+  type: "Convolution"
+  bottom: "I"
+  top: "tform/conv1"
+  param {
+    lr_mult: 0.1
+    decay_mult: 0.1
+  }
+  param {
+    lr_mult: 0.2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 24
+    pad: 0
+    kernel_size: 5
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "tform/pool1"
+  type: "Pooling"
+  bottom: "tform/conv1"
+  top: "tform/pool1"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
+}
+layer {
+  name: "tform/relu1"
+  type: "PReLU"
+  bottom: "tform/pool1"
+  top: "tform/pool1"
+  param {
+    lr_mult: 0.1
+    decay_mult: 0
+  }
+}
+layer {
+  name: "tform/conv2"
+  type: "Convolution"
+  bottom: "tform/pool1"
+  top: "tform/conv2"
+  param {
+    lr_mult: 0.1
+    decay_mult: 0.1
+  }
+  param {
+    lr_mult: 0.2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 48
+    pad: 0
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "tform/pool2"
+  type: "Pooling"
+  bottom: "tform/conv2"
+  top: "tform/pool2"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
+}
+layer {
+  name: "tform/relu2"
+  type: "PReLU"
+  bottom: "tform/pool2"
+  top: "tform/pool2"
+  param {
+    lr_mult: 0.1
+    decay_mult: 0
+  }
+}
+layer {
+  name: "tform/conv3"
+  type: "Convolution"
+  bottom: "tform/pool2"
+  top: "tform/conv3"
+  param {
+    lr_mult: 0.1
+    decay_mult: 0.1
+  }
+  param {
+    lr_mult: 0.2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 96
+    pad: 0
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "tform/pool3"
+  type: "Pooling"
+  bottom: "tform/conv3"
+  top: "tform/pool3"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
+}
+layer {
+  name: "tform/relu3"
+  type: "PReLU"
+  bottom: "tform/pool3"
+  top: "tform/pool3"
+  param {
+    lr_mult: 0.1
+    decay_mult: 0
+  }
+}
+layer {
+  name: "tform/ip1"
+  type: "InnerProduct"
+  bottom: "tform/pool3"
+  top: "tform/ip1"
+  param {
+    lr_mult: 0.1
+    decay_mult: 0.1
+  }
+  param {
+    lr_mult: 0.2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 64
+    weight_filler {
+      type: "gaussian"
+      std: 0.03
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "tform/ip1r"
+  type: "PReLU"
+  bottom: "tform/ip1"
+  top: "tform/ip1"
+  param {
+    lr_mult: 0.1
+    decay_mult: 0
+  }
+}
+layer {
+  name: "tform/ip2"
+  type: "InnerProduct"
+  bottom: "tform/ip1"
+  top: "tform/ip2"
+  param {
+    lr_mult: 0.1
+    decay_mult: 0.1
+  }
+  param {
+    lr_mult: 0.2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 64
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "tform/ip2r"
+  type: "PReLU"
+  bottom: "tform/ip2"
+  top: "tform/ip2"
+  param {
+    lr_mult: 0.1
+    decay_mult: 0
+  }
+}
+layer {
+  name: "tform"
+  type: "InnerProduct"
+  bottom: "tform/ip2"
+  top: "tform"
+  param {
+    lr_mult: 0.1
+    decay_mult: 0.1
+  }
+  param {
+    lr_mult: 0.1
+    decay_mult: 0.2
+  }
+  inner_product_param {
+    num_output: 8
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "value"
+      values: 0.7
+      values: 0
+      values: 0
+      values: 0
+      values: 0.7
+      values: 0
+      values: 0
+      values: 0
+    }
+  }
+}
+layer {
+  name: "st"
+  type: "SpatialTransformer"
+  bottom: "I"
+  bottom: "tform"
+  top: "st_output"
+  st_param {
+    output_H: 96
+    output_W: 96
+    transform_type: "projective"
+  }
+}
+layer {
+  name: "tmp/conv1a"
+  type: "Convolution"
+  bottom: "st_output"
+  top: "conv1a"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 32
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "tmp/relu1a"
+  type: "PReLU"
+  bottom: "conv1a"
+  top: "conv1a"
+}
+layer {
+  name: "tmp/pool1b"
+  type: "Pooling"
+  bottom: "conv1a"
+  top: "pool1b"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
+}
+layer {
+  name: "tmp/conv2"
+  type: "Convolution"
+  bottom: "pool1b"
+  top: "conv2"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 64
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "tmp/relu2"
+  type: "PReLU"
+  bottom: "conv2"
+  top: "conv2"
+}
+layer {
+  name: "tmp/pool2"
+  type: "Pooling"
+  bottom: "conv2"
+  top: "pool2"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
+}
+layer {
+  name: "tmp/conv3"
+  type: "Convolution"
+  bottom: "pool2"
+  top: "conv3"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 128
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "tmp/relu3"
+  type: "PReLU"
+  bottom: "conv3"
+  top: "conv3"
+}
+layer {
+  name: "tmp/pool3"
+  type: "Pooling"
+  bottom: "conv3"
+  top: "pool3"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
+}
+layer {
+  name: "tmp/conv4"
+  type: "Convolution"
+  bottom: "pool3"
+  top: "conv4"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 256
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "tmp/relu4"
+  type: "PReLU"
+  bottom: "conv4"
+  top: "conv4"
+}
+layer {
+  name: "tmp/pool4"
+  type: "Pooling"
+  bottom: "conv4"
+  top: "pool4"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
+}
+layer {
+  name: "tmp/fc5"
+  type: "InnerProduct"
+  bottom: "pool4"
+  top: "fc5"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 512
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "tmp/classifier"
+  type: "InnerProduct"
+  bottom: "fc5"
+  top: "classifier"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  include {
+    phase: TRAIN
+  }
+  inner_product_param {
+    num_output: 10575
+    bias_term: false
+    weight_filler {
+      type: "xavier"
+    }
+  }
+}
+layer {
+  name: "loss/softmax"
+  type: "SoftmaxWithLoss"
+  bottom: "classifier"
+  bottom: "Id"
+  top: "loss/softmax"
+  include {
+    phase: TRAIN
+  }
+}
+layer {
+  name: "loss/center"
+  type: "CenterLoss"
+  bottom: "fc5"
+  bottom: "Id"
+  top: "loss/center"
+  loss_weight: 0.005
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  include {
+    phase: TRAIN
+  }
+  center_loss_param {
+    num_output: 10575
+    center_filler {
+      type: "xavier"
+    }
+  }
+}
+I0610 18:11:11.666849  1866 layer_factory.hpp:77] Creating layer data
+I0610 18:11:11.666870  1866 net.cpp:100] Creating Layer data
+I0610 18:11:11.666877  1866 net.cpp:408] data -> I
+I0610 18:11:11.666900  1866 net.cpp:408] data -> Id
+I0610 18:11:11.666911  1866 hdf5_data_layer.cpp:283] Loading list of HDF5 filenames from: ../data/webface.txt
+I0610 18:11:11.666955  1866 hdf5_data_layer.cpp:304] Number of HDF5 files: 4
+I0610 18:11:11.667379  1866 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface4.h5 idx 0
+I0610 18:11:11.668614  1866 hdf5.cpp:35] Datatype class: H5T_INTEGER
+I0610 18:11:18.485133  1866 hdf5_data_layer.cpp:333] Shuffled 110414 rows, first:59214
+I0610 18:11:18.485322  1866 net.cpp:150] Setting up data
+I0610 18:11:18.485363  1866 net.cpp:157] Top shape: 128 1 128 128 (2097152)
+I0610 18:11:18.485371  1866 net.cpp:157] Top shape: 128 1 (128)
+I0610 18:11:18.485375  1866 net.cpp:165] Memory required for data: 8389120
+I0610 18:11:18.485383  1866 layer_factory.hpp:77] Creating layer I_data_0_split
+I0610 18:11:18.485396  1866 net.cpp:100] Creating Layer I_data_0_split
+I0610 18:11:18.485401  1866 net.cpp:434] I_data_0_split <- I
+I0610 18:11:18.485416  1866 net.cpp:408] I_data_0_split -> I_data_0_split_0
+I0610 18:11:18.485427  1866 net.cpp:408] I_data_0_split -> I_data_0_split_1
+I0610 18:11:18.485532  1866 net.cpp:150] Setting up I_data_0_split
+I0610 18:11:18.485541  1866 net.cpp:157] Top shape: 128 1 128 128 (2097152)
+I0610 18:11:18.485546  1866 net.cpp:157] Top shape: 128 1 128 128 (2097152)
+I0610 18:11:18.485550  1866 net.cpp:165] Memory required for data: 25166336
+I0610 18:11:18.485554  1866 layer_factory.hpp:77] Creating layer Id_data_1_split
+I0610 18:11:18.485561  1866 net.cpp:100] Creating Layer Id_data_1_split
+I0610 18:11:18.485564  1866 net.cpp:434] Id_data_1_split <- Id
+I0610 18:11:18.485570  1866 net.cpp:408] Id_data_1_split -> Id_data_1_split_0
+I0610 18:11:18.485576  1866 net.cpp:408] Id_data_1_split -> Id_data_1_split_1
+I0610 18:11:18.485615  1866 net.cpp:150] Setting up Id_data_1_split
+I0610 18:11:18.485622  1866 net.cpp:157] Top shape: 128 1 (128)
+I0610 18:11:18.485626  1866 net.cpp:157] Top shape: 128 1 (128)
+I0610 18:11:18.485630  1866 net.cpp:165] Memory required for data: 25167360
+I0610 18:11:18.485632  1866 layer_factory.hpp:77] Creating layer tform/conv1
+I0610 18:11:18.485652  1866 net.cpp:100] Creating Layer tform/conv1
+I0610 18:11:18.485657  1866 net.cpp:434] tform/conv1 <- I_data_0_split_0
+I0610 18:11:18.485664  1866 net.cpp:408] tform/conv1 -> tform/conv1
+I0610 18:11:18.487587  1868 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface1.h5 idx 1
+I0610 18:11:21.659128  1866 net.cpp:150] Setting up tform/conv1
+I0610 18:11:21.659163  1866 net.cpp:157] Top shape: 128 24 124 124 (47235072)
+I0610 18:11:21.659168  1866 net.cpp:165] Memory required for data: 214107648
+I0610 18:11:21.659188  1866 layer_factory.hpp:77] Creating layer tform/pool1
+I0610 18:11:21.659205  1866 net.cpp:100] Creating Layer tform/pool1
+I0610 18:11:21.659210  1866 net.cpp:434] tform/pool1 <- tform/conv1
+I0610 18:11:21.659217  1866 net.cpp:408] tform/pool1 -> tform/pool1
+I0610 18:11:21.659271  1866 net.cpp:150] Setting up tform/pool1
+I0610 18:11:21.659279  1866 net.cpp:157] Top shape: 128 24 62 62 (11808768)
+I0610 18:11:21.659282  1866 net.cpp:165] Memory required for data: 261342720
+I0610 18:11:21.659286  1866 layer_factory.hpp:77] Creating layer tform/relu1
+I0610 18:11:21.659294  1866 net.cpp:100] Creating Layer tform/relu1
+I0610 18:11:21.659298  1866 net.cpp:434] tform/relu1 <- tform/pool1
+I0610 18:11:21.659303  1866 net.cpp:395] tform/relu1 -> tform/pool1 (in-place)
+I0610 18:11:21.659456  1866 net.cpp:150] Setting up tform/relu1
+I0610 18:11:21.659466  1866 net.cpp:157] Top shape: 128 24 62 62 (11808768)
+I0610 18:11:21.659503  1866 net.cpp:165] Memory required for data: 308577792
+I0610 18:11:21.659512  1866 layer_factory.hpp:77] Creating layer tform/conv2
+I0610 18:11:21.659523  1866 net.cpp:100] Creating Layer tform/conv2
+I0610 18:11:21.659528  1866 net.cpp:434] tform/conv2 <- tform/pool1
+I0610 18:11:21.659533  1866 net.cpp:408] tform/conv2 -> tform/conv2
+I0610 18:11:21.660976  1866 net.cpp:150] Setting up tform/conv2
+I0610 18:11:21.660991  1866 net.cpp:157] Top shape: 128 48 60 60 (22118400)
+I0610 18:11:21.660995  1866 net.cpp:165] Memory required for data: 397051392
+I0610 18:11:21.661005  1866 layer_factory.hpp:77] Creating layer tform/pool2
+I0610 18:11:21.661011  1866 net.cpp:100] Creating Layer tform/pool2
+I0610 18:11:21.661015  1866 net.cpp:434] tform/pool2 <- tform/conv2
+I0610 18:11:21.661020  1866 net.cpp:408] tform/pool2 -> tform/pool2
+I0610 18:11:21.661056  1866 net.cpp:150] Setting up tform/pool2
+I0610 18:11:21.661063  1866 net.cpp:157] Top shape: 128 48 30 30 (5529600)
+I0610 18:11:21.661067  1866 net.cpp:165] Memory required for data: 419169792
+I0610 18:11:21.661070  1866 layer_factory.hpp:77] Creating layer tform/relu2
+I0610 18:11:21.661077  1866 net.cpp:100] Creating Layer tform/relu2
+I0610 18:11:21.661079  1866 net.cpp:434] tform/relu2 <- tform/pool2
+I0610 18:11:21.661084  1866 net.cpp:395] tform/relu2 -> tform/pool2 (in-place)
+I0610 18:11:21.661671  1866 net.cpp:150] Setting up tform/relu2
+I0610 18:11:21.661684  1866 net.cpp:157] Top shape: 128 48 30 30 (5529600)
+I0610 18:11:21.661686  1866 net.cpp:165] Memory required for data: 441288192
+I0610 18:11:21.661692  1866 layer_factory.hpp:77] Creating layer tform/conv3
+I0610 18:11:21.661701  1866 net.cpp:100] Creating Layer tform/conv3
+I0610 18:11:21.661705  1866 net.cpp:434] tform/conv3 <- tform/pool2
+I0610 18:11:21.661711  1866 net.cpp:408] tform/conv3 -> tform/conv3
+I0610 18:11:21.662719  1866 net.cpp:150] Setting up tform/conv3
+I0610 18:11:21.662732  1866 net.cpp:157] Top shape: 128 96 28 28 (9633792)
+I0610 18:11:21.662736  1866 net.cpp:165] Memory required for data: 479823360
+I0610 18:11:21.662744  1866 layer_factory.hpp:77] Creating layer tform/pool3
+I0610 18:11:21.662750  1866 net.cpp:100] Creating Layer tform/pool3
+I0610 18:11:21.662755  1866 net.cpp:434] tform/pool3 <- tform/conv3
+I0610 18:11:21.662760  1866 net.cpp:408] tform/pool3 -> tform/pool3
+I0610 18:11:21.662796  1866 net.cpp:150] Setting up tform/pool3
+I0610 18:11:21.662803  1866 net.cpp:157] Top shape: 128 96 14 14 (2408448)
+I0610 18:11:21.662806  1866 net.cpp:165] Memory required for data: 489457152
+I0610 18:11:21.662809  1866 layer_factory.hpp:77] Creating layer tform/relu3
+I0610 18:11:21.662814  1866 net.cpp:100] Creating Layer tform/relu3
+I0610 18:11:21.662818  1866 net.cpp:434] tform/relu3 <- tform/pool3
+I0610 18:11:21.662822  1866 net.cpp:395] tform/relu3 -> tform/pool3 (in-place)
+I0610 18:11:21.662894  1866 net.cpp:150] Setting up tform/relu3
+I0610 18:11:21.662901  1866 net.cpp:157] Top shape: 128 96 14 14 (2408448)
+I0610 18:11:21.662904  1866 net.cpp:165] Memory required for data: 499090944
+I0610 18:11:21.662911  1866 layer_factory.hpp:77] Creating layer tform/ip1
+I0610 18:11:21.662922  1866 net.cpp:100] Creating Layer tform/ip1
+I0610 18:11:21.662926  1866 net.cpp:434] tform/ip1 <- tform/pool3
+I0610 18:11:21.662932  1866 net.cpp:408] tform/ip1 -> tform/ip1
+I0610 18:11:21.674851  1866 net.cpp:150] Setting up tform/ip1
+I0610 18:11:21.674865  1866 net.cpp:157] Top shape: 128 64 (8192)
+I0610 18:11:21.674868  1866 net.cpp:165] Memory required for data: 499123712
+I0610 18:11:21.674875  1866 layer_factory.hpp:77] Creating layer tform/ip1r
+I0610 18:11:21.674881  1866 net.cpp:100] Creating Layer tform/ip1r
+I0610 18:11:21.674885  1866 net.cpp:434] tform/ip1r <- tform/ip1
+I0610 18:11:21.674890  1866 net.cpp:395] tform/ip1r -> tform/ip1 (in-place)
+I0610 18:11:21.674952  1866 net.cpp:150] Setting up tform/ip1r
+I0610 18:11:21.674958  1866 net.cpp:157] Top shape: 128 64 (8192)
+I0610 18:11:21.674962  1866 net.cpp:165] Memory required for data: 499156480
+I0610 18:11:21.674967  1866 layer_factory.hpp:77] Creating layer tform/ip2
+I0610 18:11:21.674985  1866 net.cpp:100] Creating Layer tform/ip2
+I0610 18:11:21.674990  1866 net.cpp:434] tform/ip2 <- tform/ip1
+I0610 18:11:21.674995  1866 net.cpp:408] tform/ip2 -> tform/ip2
+I0610 18:11:21.675104  1866 net.cpp:150] Setting up tform/ip2
+I0610 18:11:21.675112  1866 net.cpp:157] Top shape: 128 64 (8192)
+I0610 18:11:21.675115  1866 net.cpp:165] Memory required for data: 499189248
+I0610 18:11:21.675120  1866 layer_factory.hpp:77] Creating layer tform/ip2r
+I0610 18:11:21.675127  1866 net.cpp:100] Creating Layer tform/ip2r
+I0610 18:11:21.675129  1866 net.cpp:434] tform/ip2r <- tform/ip2
+I0610 18:11:21.675134  1866 net.cpp:395] tform/ip2r -> tform/ip2 (in-place)
+I0610 18:11:21.675191  1866 net.cpp:150] Setting up tform/ip2r
+I0610 18:11:21.675199  1866 net.cpp:157] Top shape: 128 64 (8192)
+I0610 18:11:21.675201  1866 net.cpp:165] Memory required for data: 499222016
+I0610 18:11:21.675206  1866 layer_factory.hpp:77] Creating layer tform
+I0610 18:11:21.675215  1866 net.cpp:100] Creating Layer tform
+I0610 18:11:21.675218  1866 net.cpp:434] tform <- tform/ip2
+I0610 18:11:21.675223  1866 net.cpp:408] tform -> tform
+I0610 18:11:21.675304  1866 net.cpp:150] Setting up tform
+I0610 18:11:21.675312  1866 net.cpp:157] Top shape: 128 8 (1024)
+I0610 18:11:21.675315  1866 net.cpp:165] Memory required for data: 499226112
+I0610 18:11:21.675323  1866 layer_factory.hpp:77] Creating layer st
+I0610 18:11:21.675333  1866 net.cpp:100] Creating Layer st
+I0610 18:11:21.675338  1866 net.cpp:434] st <- I_data_0_split_1
+I0610 18:11:21.675341  1866 net.cpp:434] st <- tform
+I0610 18:11:21.675346  1866 net.cpp:408] st -> st_output
+I0610 18:11:21.675355  1866 spatial_transformer_layer.cpp:47] Spatial Transformer: output (96,96), type: projective
+I0610 18:11:21.675407  1866 net.cpp:150] Setting up st
+I0610 18:11:21.675415  1866 net.cpp:157] Top shape: 128 1 96 96 (1179648)
+I0610 18:11:21.675417  1866 net.cpp:165] Memory required for data: 503944704
+I0610 18:11:21.675421  1866 layer_factory.hpp:77] Creating layer tmp/conv1a
+I0610 18:11:21.675431  1866 net.cpp:100] Creating Layer tmp/conv1a
+I0610 18:11:21.675434  1866 net.cpp:434] tmp/conv1a <- st_output
+I0610 18:11:21.675441  1866 net.cpp:408] tmp/conv1a -> conv1a
+I0610 18:11:21.676220  1866 net.cpp:150] Setting up tmp/conv1a
+I0610 18:11:21.676235  1866 net.cpp:157] Top shape: 128 32 94 94 (36192256)
+I0610 18:11:21.676239  1866 net.cpp:165] Memory required for data: 648713728
+I0610 18:11:21.676245  1866 layer_factory.hpp:77] Creating layer tmp/relu1a
+I0610 18:11:21.676251  1866 net.cpp:100] Creating Layer tmp/relu1a
+I0610 18:11:21.676255  1866 net.cpp:434] tmp/relu1a <- conv1a
+I0610 18:11:21.676260  1866 net.cpp:395] tmp/relu1a -> conv1a (in-place)
+I0610 18:11:21.677022  1866 net.cpp:150] Setting up tmp/relu1a
+I0610 18:11:21.677036  1866 net.cpp:157] Top shape: 128 32 94 94 (36192256)
+I0610 18:11:21.677039  1866 net.cpp:165] Memory required for data: 793482752
+I0610 18:11:21.677044  1866 layer_factory.hpp:77] Creating layer tmp/pool1b
+I0610 18:11:21.677052  1866 net.cpp:100] Creating Layer tmp/pool1b
+I0610 18:11:21.677055  1866 net.cpp:434] tmp/pool1b <- conv1a
+I0610 18:11:21.677060  1866 net.cpp:408] tmp/pool1b -> pool1b
+I0610 18:11:21.677091  1866 net.cpp:150] Setting up tmp/pool1b
+I0610 18:11:21.677098  1866 net.cpp:157] Top shape: 128 32 47 47 (9048064)
+I0610 18:11:21.677101  1866 net.cpp:165] Memory required for data: 829675008
+I0610 18:11:21.677104  1866 layer_factory.hpp:77] Creating layer tmp/conv2
+I0610 18:11:21.677114  1866 net.cpp:100] Creating Layer tmp/conv2
+I0610 18:11:21.677117  1866 net.cpp:434] tmp/conv2 <- pool1b
+I0610 18:11:21.677122  1866 net.cpp:408] tmp/conv2 -> conv2
+I0610 18:11:21.677903  1866 net.cpp:150] Setting up tmp/conv2
+I0610 18:11:21.677918  1866 net.cpp:157] Top shape: 128 64 45 45 (16588800)
+I0610 18:11:21.677922  1866 net.cpp:165] Memory required for data: 896030208
+I0610 18:11:21.677928  1866 layer_factory.hpp:77] Creating layer tmp/relu2
+I0610 18:11:21.677934  1866 net.cpp:100] Creating Layer tmp/relu2
+I0610 18:11:21.677952  1866 net.cpp:434] tmp/relu2 <- conv2
+I0610 18:11:21.677959  1866 net.cpp:395] tmp/relu2 -> conv2 (in-place)
+I0610 18:11:21.678603  1866 net.cpp:150] Setting up tmp/relu2
+I0610 18:11:21.678617  1866 net.cpp:157] Top shape: 128 64 45 45 (16588800)
+I0610 18:11:21.678620  1866 net.cpp:165] Memory required for data: 962385408
+I0610 18:11:21.678625  1866 layer_factory.hpp:77] Creating layer tmp/pool2
+I0610 18:11:21.678633  1866 net.cpp:100] Creating Layer tmp/pool2
+I0610 18:11:21.678637  1866 net.cpp:434] tmp/pool2 <- conv2
+I0610 18:11:21.678642  1866 net.cpp:408] tmp/pool2 -> pool2
+I0610 18:11:21.678678  1866 net.cpp:150] Setting up tmp/pool2
+I0610 18:11:21.678685  1866 net.cpp:157] Top shape: 128 64 23 23 (4333568)
+I0610 18:11:21.678689  1866 net.cpp:165] Memory required for data: 979719680
+I0610 18:11:21.678691  1866 layer_factory.hpp:77] Creating layer tmp/conv3
+I0610 18:11:21.678701  1866 net.cpp:100] Creating Layer tmp/conv3
+I0610 18:11:21.678705  1866 net.cpp:434] tmp/conv3 <- pool2
+I0610 18:11:21.678712  1866 net.cpp:408] tmp/conv3 -> conv3
+I0610 18:11:21.680057  1866 net.cpp:150] Setting up tmp/conv3
+I0610 18:11:21.680069  1866 net.cpp:157] Top shape: 128 128 21 21 (7225344)
+I0610 18:11:21.680073  1866 net.cpp:165] Memory required for data: 1008621056
+I0610 18:11:21.680080  1866 layer_factory.hpp:77] Creating layer tmp/relu3
+I0610 18:11:21.680086  1866 net.cpp:100] Creating Layer tmp/relu3
+I0610 18:11:21.680090  1866 net.cpp:434] tmp/relu3 <- conv3
+I0610 18:11:21.680097  1866 net.cpp:395] tmp/relu3 -> conv3 (in-place)
+I0610 18:11:21.680202  1866 net.cpp:150] Setting up tmp/relu3
+I0610 18:11:21.680212  1866 net.cpp:157] Top shape: 128 128 21 21 (7225344)
+I0610 18:11:21.680214  1866 net.cpp:165] Memory required for data: 1037522432
+I0610 18:11:21.680218  1866 layer_factory.hpp:77] Creating layer tmp/pool3
+I0610 18:11:21.680227  1866 net.cpp:100] Creating Layer tmp/pool3
+I0610 18:11:21.680230  1866 net.cpp:434] tmp/pool3 <- conv3
+I0610 18:11:21.680235  1866 net.cpp:408] tmp/pool3 -> pool3
+I0610 18:11:21.680271  1866 net.cpp:150] Setting up tmp/pool3
+I0610 18:11:21.680279  1866 net.cpp:157] Top shape: 128 128 11 11 (1982464)
+I0610 18:11:21.680281  1866 net.cpp:165] Memory required for data: 1045452288
+I0610 18:11:21.680284  1866 layer_factory.hpp:77] Creating layer tmp/conv4
+I0610 18:11:21.680294  1866 net.cpp:100] Creating Layer tmp/conv4
+I0610 18:11:21.680299  1866 net.cpp:434] tmp/conv4 <- pool3
+I0610 18:11:21.680305  1866 net.cpp:408] tmp/conv4 -> conv4
+I0610 18:11:21.683292  1866 net.cpp:150] Setting up tmp/conv4
+I0610 18:11:21.683305  1866 net.cpp:157] Top shape: 128 256 9 9 (2654208)
+I0610 18:11:21.683310  1866 net.cpp:165] Memory required for data: 1056069120
+I0610 18:11:21.683315  1866 layer_factory.hpp:77] Creating layer tmp/relu4
+I0610 18:11:21.683323  1866 net.cpp:100] Creating Layer tmp/relu4
+I0610 18:11:21.683327  1866 net.cpp:434] tmp/relu4 <- conv4
+I0610 18:11:21.683332  1866 net.cpp:395] tmp/relu4 -> conv4 (in-place)
+I0610 18:11:21.683418  1866 net.cpp:150] Setting up tmp/relu4
+I0610 18:11:21.683426  1866 net.cpp:157] Top shape: 128 256 9 9 (2654208)
+I0610 18:11:21.683429  1866 net.cpp:165] Memory required for data: 1066685952
+I0610 18:11:21.683434  1866 layer_factory.hpp:77] Creating layer tmp/pool4
+I0610 18:11:21.683442  1866 net.cpp:100] Creating Layer tmp/pool4
+I0610 18:11:21.683446  1866 net.cpp:434] tmp/pool4 <- conv4
+I0610 18:11:21.683452  1866 net.cpp:408] tmp/pool4 -> pool4
+I0610 18:11:21.683485  1866 net.cpp:150] Setting up tmp/pool4
+I0610 18:11:21.683491  1866 net.cpp:157] Top shape: 128 256 5 5 (819200)
+I0610 18:11:21.683495  1866 net.cpp:165] Memory required for data: 1069962752
+I0610 18:11:21.683498  1866 layer_factory.hpp:77] Creating layer tmp/fc5
+I0610 18:11:21.683506  1866 net.cpp:100] Creating Layer tmp/fc5
+I0610 18:11:21.683511  1866 net.cpp:434] tmp/fc5 <- pool4
+I0610 18:11:21.683516  1866 net.cpp:408] tmp/fc5 -> fc5
+I0610 18:11:21.707096  1866 net.cpp:150] Setting up tmp/fc5
+I0610 18:11:21.707111  1866 net.cpp:157] Top shape: 128 512 (65536)
+I0610 18:11:21.707114  1866 net.cpp:165] Memory required for data: 1070224896
+I0610 18:11:21.707134  1866 layer_factory.hpp:77] Creating layer fc5_tmp/fc5_0_split
+I0610 18:11:21.707141  1866 net.cpp:100] Creating Layer fc5_tmp/fc5_0_split
+I0610 18:11:21.707145  1866 net.cpp:434] fc5_tmp/fc5_0_split <- fc5
+I0610 18:11:21.707152  1866 net.cpp:408] fc5_tmp/fc5_0_split -> fc5_tmp/fc5_0_split_0
+I0610 18:11:21.707159  1866 net.cpp:408] fc5_tmp/fc5_0_split -> fc5_tmp/fc5_0_split_1
+I0610 18:11:21.707190  1866 net.cpp:150] Setting up fc5_tmp/fc5_0_split
+I0610 18:11:21.707197  1866 net.cpp:157] Top shape: 128 512 (65536)
+I0610 18:11:21.707201  1866 net.cpp:157] Top shape: 128 512 (65536)
+I0610 18:11:21.707203  1866 net.cpp:165] Memory required for data: 1070749184
+I0610 18:11:21.707207  1866 layer_factory.hpp:77] Creating layer tmp/classifier
+I0610 18:11:21.707216  1866 net.cpp:100] Creating Layer tmp/classifier
+I0610 18:11:21.707221  1866 net.cpp:434] tmp/classifier <- fc5_tmp/fc5_0_split_0
+I0610 18:11:21.707227  1866 net.cpp:408] tmp/classifier -> classifier
+I0610 18:11:21.745808  1866 net.cpp:150] Setting up tmp/classifier
+I0610 18:11:21.745832  1866 net.cpp:157] Top shape: 128 10575 (1353600)
+I0610 18:11:21.745836  1866 net.cpp:165] Memory required for data: 1076163584
+I0610 18:11:21.745842  1866 layer_factory.hpp:77] Creating layer loss/softmax
+I0610 18:11:21.745854  1866 net.cpp:100] Creating Layer loss/softmax
+I0610 18:11:21.745859  1866 net.cpp:434] loss/softmax <- classifier
+I0610 18:11:21.745865  1866 net.cpp:434] loss/softmax <- Id_data_1_split_0
+I0610 18:11:21.745872  1866 net.cpp:408] loss/softmax -> loss/softmax
+I0610 18:11:21.745887  1866 layer_factory.hpp:77] Creating layer loss/softmax
+I0610 18:11:21.749140  1866 net.cpp:150] Setting up loss/softmax
+I0610 18:11:21.749153  1866 net.cpp:157] Top shape: (1)
+I0610 18:11:21.749157  1866 net.cpp:160]     with loss weight 1
+I0610 18:11:21.749186  1866 net.cpp:165] Memory required for data: 1076163588
+I0610 18:11:21.749189  1866 layer_factory.hpp:77] Creating layer loss/center
+I0610 18:11:21.749203  1866 net.cpp:100] Creating Layer loss/center
+I0610 18:11:21.749208  1866 net.cpp:434] loss/center <- fc5_tmp/fc5_0_split_1
+I0610 18:11:21.749213  1866 net.cpp:434] loss/center <- Id_data_1_split_1
+I0610 18:11:21.749218  1866 net.cpp:408] loss/center -> loss/center
+I0610 18:11:21.789301  1866 net.cpp:150] Setting up loss/center
+I0610 18:11:21.789326  1866 net.cpp:157] Top shape: (1)
+I0610 18:11:21.789330  1866 net.cpp:160]     with loss weight 0.005
+I0610 18:11:21.789340  1866 net.cpp:165] Memory required for data: 1076163592
+I0610 18:11:21.789355  1866 net.cpp:226] loss/center needs backward computation.
+I0610 18:11:21.789361  1866 net.cpp:226] loss/softmax needs backward computation.
+I0610 18:11:21.789364  1866 net.cpp:226] tmp/classifier needs backward computation.
+I0610 18:11:21.789368  1866 net.cpp:226] fc5_tmp/fc5_0_split needs backward computation.
+I0610 18:11:21.789372  1866 net.cpp:226] tmp/fc5 needs backward computation.
+I0610 18:11:21.789376  1866 net.cpp:226] tmp/pool4 needs backward computation.
+I0610 18:11:21.789378  1866 net.cpp:226] tmp/relu4 needs backward computation.
+I0610 18:11:21.789382  1866 net.cpp:226] tmp/conv4 needs backward computation.
+I0610 18:11:21.789386  1866 net.cpp:226] tmp/pool3 needs backward computation.
+I0610 18:11:21.789389  1866 net.cpp:226] tmp/relu3 needs backward computation.
+I0610 18:11:21.789392  1866 net.cpp:226] tmp/conv3 needs backward computation.
+I0610 18:11:21.789396  1866 net.cpp:226] tmp/pool2 needs backward computation.
+I0610 18:11:21.789399  1866 net.cpp:226] tmp/relu2 needs backward computation.
+I0610 18:11:21.789403  1866 net.cpp:226] tmp/conv2 needs backward computation.
+I0610 18:11:21.789407  1866 net.cpp:226] tmp/pool1b needs backward computation.
+I0610 18:11:21.789412  1866 net.cpp:226] tmp/relu1a needs backward computation.
+I0610 18:11:21.789414  1866 net.cpp:226] tmp/conv1a needs backward computation.
+I0610 18:11:21.789418  1866 net.cpp:226] st needs backward computation.
+I0610 18:11:21.789422  1866 net.cpp:226] tform needs backward computation.
+I0610 18:11:21.789448  1866 net.cpp:226] tform/ip2r needs backward computation.
+I0610 18:11:21.789453  1866 net.cpp:226] tform/ip2 needs backward computation.
+I0610 18:11:21.789456  1866 net.cpp:226] tform/ip1r needs backward computation.
+I0610 18:11:21.789460  1866 net.cpp:226] tform/ip1 needs backward computation.
+I0610 18:11:21.789463  1866 net.cpp:226] tform/relu3 needs backward computation.
+I0610 18:11:21.789468  1866 net.cpp:226] tform/pool3 needs backward computation.
+I0610 18:11:21.789470  1866 net.cpp:226] tform/conv3 needs backward computation.
+I0610 18:11:21.789474  1866 net.cpp:226] tform/relu2 needs backward computation.
+I0610 18:11:21.789477  1866 net.cpp:226] tform/pool2 needs backward computation.
+I0610 18:11:21.789480  1866 net.cpp:226] tform/conv2 needs backward computation.
+I0610 18:11:21.789484  1866 net.cpp:226] tform/relu1 needs backward computation.
+I0610 18:11:21.789489  1866 net.cpp:226] tform/pool1 needs backward computation.
+I0610 18:11:21.789491  1866 net.cpp:226] tform/conv1 needs backward computation.
+I0610 18:11:21.789495  1866 net.cpp:228] Id_data_1_split does not need backward computation.
+I0610 18:11:21.789500  1866 net.cpp:228] I_data_0_split does not need backward computation.
+I0610 18:11:21.789505  1866 net.cpp:228] data does not need backward computation.
+I0610 18:11:21.789510  1866 net.cpp:270] This network produces output loss/center
+I0610 18:11:21.789520  1866 net.cpp:270] This network produces output loss/softmax
+I0610 18:11:21.789546  1866 net.cpp:283] Network initialization done.
+I0610 18:11:21.789659  1866 solver.cpp:60] Solver scaffolding done.
+I0610 18:11:21.790590  1866 caffe.cpp:251] Starting Optimization
+I0610 18:11:21.790601  1866 solver.cpp:279] Solving face-loc-pro-3
+I0610 18:11:21.790603  1866 solver.cpp:280] Learning Rate Policy: step
+I0610 18:11:21.910178  1866 solver.cpp:228] Iteration 0, loss = 9.34133
+I0610 18:11:21.910212  1866 solver.cpp:244]     Train net output #0: loss/center = 9.7707 (* 0.005 = 0.0488535 loss)
+I0610 18:11:21.910221  1866 solver.cpp:244]     Train net output #1: loss/softmax = 9.29247 (* 1 = 9.29247 loss)
+I0610 18:11:21.910239  1866 sgd_solver.cpp:106] Iteration 0, lr = 0.01
+I0610 18:11:32.241878  1866 solver.cpp:228] Iteration 100, loss = 9.26903
+I0610 18:11:32.241914  1866 solver.cpp:244]     Train net output #0: loss/center = 1.29347 (* 0.005 = 0.00646733 loss)
+I0610 18:11:32.241922  1866 solver.cpp:244]     Train net output #1: loss/softmax = 9.25765 (* 1 = 9.25765 loss)
+I0610 18:11:32.241927  1866 sgd_solver.cpp:106] Iteration 100, lr = 0.01
+I0610 18:11:43.429708  1866 solver.cpp:228] Iteration 200, loss = 9.264
+I0610 18:11:43.429826  1866 solver.cpp:244]     Train net output #0: loss/center = 1.47215 (* 0.005 = 0.00736077 loss)
+I0610 18:11:43.429836  1866 solver.cpp:244]     Train net output #1: loss/softmax = 9.25771 (* 1 = 9.25771 loss)
+I0610 18:11:43.429842  1866 sgd_solver.cpp:106] Iteration 200, lr = 0.01
+I0610 18:11:54.849663  1866 solver.cpp:228] Iteration 300, loss = 9.25902
+I0610 18:11:54.849714  1866 solver.cpp:244]     Train net output #0: loss/center = 2.06097 (* 0.005 = 0.0103048 loss)
+I0610 18:11:54.849721  1866 solver.cpp:244]     Train net output #1: loss/softmax = 9.2298 (* 1 = 9.2298 loss)
+I0610 18:11:54.849726  1866 sgd_solver.cpp:106] Iteration 300, lr = 0.01
+I0610 18:12:06.261449  1866 solver.cpp:228] Iteration 400, loss = 9.25325
+I0610 18:12:06.261499  1866 solver.cpp:244]     Train net output #0: loss/center = 3.1091 (* 0.005 = 0.0155455 loss)
+I0610 18:12:06.261507  1866 solver.cpp:244]     Train net output #1: loss/softmax = 9.22104 (* 1 = 9.22104 loss)
+I0610 18:12:06.261512  1866 sgd_solver.cpp:106] Iteration 400, lr = 0.01
+I0610 18:12:17.670984  1866 solver.cpp:228] Iteration 500, loss = 9.24582
+I0610 18:12:17.671236  1866 solver.cpp:244]     Train net output #0: loss/center = 3.88175 (* 0.005 = 0.0194088 loss)
+I0610 18:12:17.671247  1866 solver.cpp:244]     Train net output #1: loss/softmax = 9.19763 (* 1 = 9.19763 loss)
+I0610 18:12:17.671253  1866 sgd_solver.cpp:106] Iteration 500, lr = 0.01
+I0610 18:12:29.079146  1866 solver.cpp:228] Iteration 600, loss = 9.22929
+I0610 18:12:29.079195  1866 solver.cpp:244]     Train net output #0: loss/center = 4.78942 (* 0.005 = 0.0239471 loss)
+I0610 18:12:29.079205  1866 solver.cpp:244]     Train net output #1: loss/softmax = 9.19488 (* 1 = 9.19488 loss)
+I0610 18:12:29.079210  1866 sgd_solver.cpp:106] Iteration 600, lr = 0.01
+I0610 18:12:40.501062  1866 solver.cpp:228] Iteration 700, loss = 9.20699
+I0610 18:12:40.501112  1866 solver.cpp:244]     Train net output #0: loss/center = 6.48811 (* 0.005 = 0.0324406 loss)
+I0610 18:12:40.501121  1866 solver.cpp:244]     Train net output #1: loss/softmax = 9.07528 (* 1 = 9.07528 loss)
+I0610 18:12:40.501126  1866 sgd_solver.cpp:106] Iteration 700, lr = 0.01
+I0610 18:12:51.912896  1866 solver.cpp:228] Iteration 800, loss = 9.17689
+I0610 18:12:51.913172  1866 solver.cpp:244]     Train net output #0: loss/center = 10.2857 (* 0.005 = 0.0514285 loss)
+I0610 18:12:51.913185  1866 solver.cpp:244]     Train net output #1: loss/softmax = 9.05659 (* 1 = 9.05659 loss)
+I0610 18:12:51.913192  1866 sgd_solver.cpp:106] Iteration 800, lr = 0.01
+I0610 18:12:58.922704  1868 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface3.h5 idx 2
+I0610 18:12:58.927546  1866 hdf5_data_layer.cpp:424] Shuffled 128000 rows, first:93872
+I0610 18:13:07.001425  1866 solver.cpp:228] Iteration 900, loss = 9.14294
+I0610 18:13:07.001483  1866 solver.cpp:244]     Train net output #0: loss/center = 9.95642 (* 0.005 = 0.0497821 loss)
+I0610 18:13:07.001492  1866 solver.cpp:244]     Train net output #1: loss/softmax = 9.04251 (* 1 = 9.04251 loss)
+I0610 18:13:07.001499  1866 sgd_solver.cpp:106] Iteration 900, lr = 0.01
+I0610 18:13:18.440974  1866 solver.cpp:228] Iteration 1000, loss = 9.10434
+I0610 18:13:18.441025  1866 solver.cpp:244]     Train net output #0: loss/center = 7.38355 (* 0.005 = 0.0369178 loss)
+I0610 18:13:18.441033  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.88451 (* 1 = 8.88451 loss)
+I0610 18:13:18.441040  1866 sgd_solver.cpp:106] Iteration 1000, lr = 0.01
+I0610 18:13:29.886749  1866 solver.cpp:228] Iteration 1100, loss = 9.06665
+I0610 18:13:29.887032  1866 solver.cpp:244]     Train net output #0: loss/center = 5.41153 (* 0.005 = 0.0270576 loss)
+I0610 18:13:29.887044  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.97447 (* 1 = 8.97447 loss)
+I0610 18:13:29.887050  1866 sgd_solver.cpp:106] Iteration 1100, lr = 0.01
+I0610 18:13:41.334336  1866 solver.cpp:228] Iteration 1200, loss = 9.03162
+I0610 18:13:41.334388  1866 solver.cpp:244]     Train net output #0: loss/center = 4.98784 (* 0.005 = 0.0249392 loss)
+I0610 18:13:41.334395  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.99695 (* 1 = 8.99695 loss)
+I0610 18:13:41.334401  1866 sgd_solver.cpp:106] Iteration 1200, lr = 0.01
+I0610 18:13:52.774111  1866 solver.cpp:228] Iteration 1300, loss = 9.00373
+I0610 18:13:52.774161  1866 solver.cpp:244]     Train net output #0: loss/center = 6.97381 (* 0.005 = 0.0348691 loss)
+I0610 18:13:52.774169  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.92867 (* 1 = 8.92867 loss)
+I0610 18:13:52.774174  1866 sgd_solver.cpp:106] Iteration 1300, lr = 0.01
+I0610 18:14:04.237447  1866 solver.cpp:228] Iteration 1400, loss = 8.98228
+I0610 18:14:04.237711  1866 solver.cpp:244]     Train net output #0: loss/center = 4.13003 (* 0.005 = 0.0206502 loss)
+I0610 18:14:04.237723  1866 solver.cpp:244]     Train net output #1: loss/softmax = 9.04039 (* 1 = 9.04039 loss)
+I0610 18:14:04.237730  1866 sgd_solver.cpp:106] Iteration 1400, lr = 0.01
+I0610 18:14:15.682368  1866 solver.cpp:228] Iteration 1500, loss = 8.96238
+I0610 18:14:15.682418  1866 solver.cpp:244]     Train net output #0: loss/center = 4.55435 (* 0.005 = 0.0227717 loss)
+I0610 18:14:15.682426  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.83334 (* 1 = 8.83334 loss)
+I0610 18:14:15.682431  1866 sgd_solver.cpp:106] Iteration 1500, lr = 0.01
+I0610 18:14:27.130548  1866 solver.cpp:228] Iteration 1600, loss = 8.94249
+I0610 18:14:27.130599  1866 solver.cpp:244]     Train net output #0: loss/center = 6.08954 (* 0.005 = 0.0304477 loss)
+I0610 18:14:27.130607  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.94804 (* 1 = 8.94804 loss)
+I0610 18:14:27.130612  1866 sgd_solver.cpp:106] Iteration 1600, lr = 0.01
+I0610 18:14:38.580437  1866 solver.cpp:228] Iteration 1700, loss = 8.92608
+I0610 18:14:38.580729  1866 solver.cpp:244]     Train net output #0: loss/center = 4.68029 (* 0.005 = 0.0234015 loss)
+I0610 18:14:38.580740  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.85977 (* 1 = 8.85977 loss)
+I0610 18:14:38.580746  1866 sgd_solver.cpp:106] Iteration 1700, lr = 0.01
+I0610 18:14:50.025327  1866 solver.cpp:228] Iteration 1800, loss = 8.91373
+I0610 18:14:50.025378  1866 solver.cpp:244]     Train net output #0: loss/center = 6.19828 (* 0.005 = 0.0309914 loss)
+I0610 18:14:50.025388  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.79192 (* 1 = 8.79192 loss)
+I0610 18:14:50.025393  1866 sgd_solver.cpp:106] Iteration 1800, lr = 0.01
+I0610 18:14:57.051393  1868 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface2.h5 idx 3
+I0610 18:14:57.054129  1866 hdf5_data_layer.cpp:424] Shuffled 128000 rows, first:63693
+I0610 18:15:01.482986  1866 solver.cpp:228] Iteration 1900, loss = 8.89653
+I0610 18:15:01.483021  1866 solver.cpp:244]     Train net output #0: loss/center = 3.71286 (* 0.005 = 0.0185643 loss)
+I0610 18:15:01.483029  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.90624 (* 1 = 8.90624 loss)
+I0610 18:15:01.483034  1866 sgd_solver.cpp:106] Iteration 1900, lr = 0.01
+I0610 18:15:12.989711  1866 solver.cpp:228] Iteration 2000, loss = 8.88793
+I0610 18:15:12.989907  1866 solver.cpp:244]     Train net output #0: loss/center = 4.64013 (* 0.005 = 0.0232006 loss)
+I0610 18:15:12.989917  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.9151 (* 1 = 8.9151 loss)
+I0610 18:15:12.989923  1866 sgd_solver.cpp:106] Iteration 2000, lr = 0.01
+I0610 18:15:24.477453  1866 solver.cpp:228] Iteration 2100, loss = 8.88245
+I0610 18:15:24.477494  1866 solver.cpp:244]     Train net output #0: loss/center = 5.45808 (* 0.005 = 0.0272904 loss)
+I0610 18:15:24.477502  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.83519 (* 1 = 8.83519 loss)
+I0610 18:15:24.477509  1866 sgd_solver.cpp:106] Iteration 2100, lr = 0.01
+I0610 18:15:35.977032  1866 solver.cpp:228] Iteration 2200, loss = 8.87119
+I0610 18:15:35.977072  1866 solver.cpp:244]     Train net output #0: loss/center = 5.08196 (* 0.005 = 0.0254098 loss)
+I0610 18:15:35.977080  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.71949 (* 1 = 8.71949 loss)
+I0610 18:15:35.977085  1866 sgd_solver.cpp:106] Iteration 2200, lr = 0.01
+I0610 18:15:47.479224  1866 solver.cpp:228] Iteration 2300, loss = 8.86028
+I0610 18:15:47.479423  1866 solver.cpp:244]     Train net output #0: loss/center = 5.47133 (* 0.005 = 0.0273566 loss)
+I0610 18:15:47.479434  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.82108 (* 1 = 8.82108 loss)
+I0610 18:15:47.479440  1866 sgd_solver.cpp:106] Iteration 2300, lr = 0.01
+I0610 18:15:58.978894  1866 solver.cpp:228] Iteration 2400, loss = 8.84916
+I0610 18:15:58.978935  1866 solver.cpp:244]     Train net output #0: loss/center = 5.50731 (* 0.005 = 0.0275366 loss)
+I0610 18:15:58.978942  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.81748 (* 1 = 8.81748 loss)
+I0610 18:15:58.978948  1866 sgd_solver.cpp:106] Iteration 2400, lr = 0.01
+I0610 18:16:10.466598  1866 solver.cpp:228] Iteration 2500, loss = 8.83636
+I0610 18:16:10.466637  1866 solver.cpp:244]     Train net output #0: loss/center = 6.90394 (* 0.005 = 0.0345197 loss)
+I0610 18:16:10.466645  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.65127 (* 1 = 8.65127 loss)
+I0610 18:16:10.466650  1866 sgd_solver.cpp:106] Iteration 2500, lr = 0.01
+I0610 18:16:21.964499  1866 solver.cpp:228] Iteration 2600, loss = 8.82448
+I0610 18:16:21.964721  1866 solver.cpp:244]     Train net output #0: loss/center = 7.21218 (* 0.005 = 0.0360609 loss)
+I0610 18:16:21.964732  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.78728 (* 1 = 8.78728 loss)
+I0610 18:16:21.964738  1866 sgd_solver.cpp:106] Iteration 2600, lr = 0.01
+I0610 18:16:33.468746  1866 solver.cpp:228] Iteration 2700, loss = 8.81988
+I0610 18:16:33.468787  1866 solver.cpp:244]     Train net output #0: loss/center = 7.15617 (* 0.005 = 0.0357809 loss)
+I0610 18:16:33.468796  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.75329 (* 1 = 8.75329 loss)
+I0610 18:16:33.468801  1866 sgd_solver.cpp:106] Iteration 2700, lr = 0.01
+I0610 18:16:44.970132  1866 solver.cpp:228] Iteration 2800, loss = 8.80639
+I0610 18:16:44.970172  1866 solver.cpp:244]     Train net output #0: loss/center = 7.85588 (* 0.005 = 0.0392794 loss)
+I0610 18:16:44.970181  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.67866 (* 1 = 8.67866 loss)
+I0610 18:16:44.970187  1866 sgd_solver.cpp:106] Iteration 2800, lr = 0.01
+I0610 18:16:52.027151  1868 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface2.h5 idx 0
+I0610 18:16:52.030138  1866 hdf5_data_layer.cpp:424] Shuffled 128000 rows, first:55495
+I0610 18:16:56.444284  1866 solver.cpp:228] Iteration 2900, loss = 8.79966
+I0610 18:16:56.444324  1866 solver.cpp:244]     Train net output #0: loss/center = 8.60741 (* 0.005 = 0.043037 loss)
+I0610 18:16:56.444331  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.68314 (* 1 = 8.68314 loss)
+I0610 18:16:56.444336  1866 sgd_solver.cpp:106] Iteration 2900, lr = 0.01
+I0610 18:17:07.881559  1866 solver.cpp:228] Iteration 3000, loss = 8.7894
+I0610 18:17:07.881598  1866 solver.cpp:244]     Train net output #0: loss/center = 9.55727 (* 0.005 = 0.0477863 loss)
+I0610 18:17:07.881608  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.58036 (* 1 = 8.58036 loss)
+I0610 18:17:07.881613  1866 sgd_solver.cpp:106] Iteration 3000, lr = 0.01
+I0610 18:17:19.313604  1866 solver.cpp:228] Iteration 3100, loss = 8.77654
+I0610 18:17:19.313643  1866 solver.cpp:244]     Train net output #0: loss/center = 10.3811 (* 0.005 = 0.0519054 loss)
+I0610 18:17:19.313652  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.66604 (* 1 = 8.66604 loss)
+I0610 18:17:19.313658  1866 sgd_solver.cpp:106] Iteration 3100, lr = 0.01
+I0610 18:17:30.738525  1866 solver.cpp:228] Iteration 3200, loss = 8.76616
+I0610 18:17:30.738721  1866 solver.cpp:244]     Train net output #0: loss/center = 12.4925 (* 0.005 = 0.0624625 loss)
+I0610 18:17:30.738734  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.75702 (* 1 = 8.75702 loss)
+I0610 18:17:30.738739  1866 sgd_solver.cpp:106] Iteration 3200, lr = 0.01
+I0610 18:17:42.164072  1866 solver.cpp:228] Iteration 3300, loss = 8.75854
+I0610 18:17:42.164113  1866 solver.cpp:244]     Train net output #0: loss/center = 12.2608 (* 0.005 = 0.061304 loss)
+I0610 18:17:42.164122  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.70703 (* 1 = 8.70703 loss)
+I0610 18:17:42.164127  1866 sgd_solver.cpp:106] Iteration 3300, lr = 0.01
+I0610 18:17:53.595188  1866 solver.cpp:228] Iteration 3400, loss = 8.74311
+I0610 18:17:53.595228  1866 solver.cpp:244]     Train net output #0: loss/center = 11.6643 (* 0.005 = 0.0583213 loss)
+I0610 18:17:53.595238  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.56063 (* 1 = 8.56063 loss)
+I0610 18:17:53.595243  1866 sgd_solver.cpp:106] Iteration 3400, lr = 0.01
+I0610 18:18:05.022801  1866 solver.cpp:228] Iteration 3500, loss = 8.73269
+I0610 18:18:05.022980  1866 solver.cpp:244]     Train net output #0: loss/center = 14.7448 (* 0.005 = 0.0737241 loss)
+I0610 18:18:05.022992  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.76881 (* 1 = 8.76881 loss)
+I0610 18:18:05.022999  1866 sgd_solver.cpp:106] Iteration 3500, lr = 0.01
+I0610 18:18:16.455776  1866 solver.cpp:228] Iteration 3600, loss = 8.72166
+I0610 18:18:16.455814  1866 solver.cpp:244]     Train net output #0: loss/center = 19.2042 (* 0.005 = 0.0960211 loss)
+I0610 18:18:16.455823  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.84176 (* 1 = 8.84176 loss)
+I0610 18:18:16.455829  1866 sgd_solver.cpp:106] Iteration 3600, lr = 0.01
+I0610 18:18:27.888734  1866 solver.cpp:228] Iteration 3700, loss = 8.70318
+I0610 18:18:27.888773  1866 solver.cpp:244]     Train net output #0: loss/center = 14.6152 (* 0.005 = 0.073076 loss)
+I0610 18:18:27.888782  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.54686 (* 1 = 8.54686 loss)
+I0610 18:18:27.888788  1866 sgd_solver.cpp:106] Iteration 3700, lr = 0.01
+I0610 18:18:39.322109  1866 solver.cpp:228] Iteration 3800, loss = 8.68935
+I0610 18:18:39.322314  1866 solver.cpp:244]     Train net output #0: loss/center = 17.9176 (* 0.005 = 0.089588 loss)
+I0610 18:18:39.322327  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.5192 (* 1 = 8.5192 loss)
+I0610 18:18:39.322332  1866 sgd_solver.cpp:106] Iteration 3800, lr = 0.01
+I0610 18:18:46.336518  1868 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface1.h5 idx 1
+I0610 18:18:46.339386  1866 hdf5_data_layer.cpp:424] Shuffled 128000 rows, first:108253
+I0610 18:18:50.770071  1866 solver.cpp:228] Iteration 3900, loss = 8.66879
+I0610 18:18:50.770110  1866 solver.cpp:244]     Train net output #0: loss/center = 19.8711 (* 0.005 = 0.0993555 loss)
+I0610 18:18:50.770119  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.37862 (* 1 = 8.37862 loss)
+I0610 18:18:50.770124  1866 sgd_solver.cpp:106] Iteration 3900, lr = 0.01
+I0610 18:19:02.264333  1866 solver.cpp:228] Iteration 4000, loss = 8.63735
+I0610 18:19:02.264369  1866 solver.cpp:244]     Train net output #0: loss/center = 21.3129 (* 0.005 = 0.106565 loss)
+I0610 18:19:02.264379  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.65356 (* 1 = 8.65356 loss)
+I0610 18:19:02.264384  1866 sgd_solver.cpp:106] Iteration 4000, lr = 0.01
+I0610 18:19:13.748366  1866 solver.cpp:228] Iteration 4100, loss = 8.60704
+I0610 18:19:13.748574  1866 solver.cpp:244]     Train net output #0: loss/center = 21.4871 (* 0.005 = 0.107435 loss)
+I0610 18:19:13.748587  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.38956 (* 1 = 8.38956 loss)
+I0610 18:19:13.748594  1866 sgd_solver.cpp:106] Iteration 4100, lr = 0.01
+I0610 18:19:25.244966  1866 solver.cpp:228] Iteration 4200, loss = 8.58112
+I0610 18:19:25.245003  1866 solver.cpp:244]     Train net output #0: loss/center = 23.4303 (* 0.005 = 0.117152 loss)
+I0610 18:19:25.245012  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.51521 (* 1 = 8.51521 loss)
+I0610 18:19:25.245018  1866 sgd_solver.cpp:106] Iteration 4200, lr = 0.01
+I0610 18:19:36.728302  1866 solver.cpp:228] Iteration 4300, loss = 8.54982
+I0610 18:19:36.728341  1866 solver.cpp:244]     Train net output #0: loss/center = 23.9601 (* 0.005 = 0.119801 loss)
+I0610 18:19:36.728350  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.3378 (* 1 = 8.3378 loss)
+I0610 18:19:36.728356  1866 sgd_solver.cpp:106] Iteration 4300, lr = 0.01
+I0610 18:19:48.207579  1866 solver.cpp:228] Iteration 4400, loss = 8.52829
+I0610 18:19:48.207756  1866 solver.cpp:244]     Train net output #0: loss/center = 28.6279 (* 0.005 = 0.143139 loss)
+I0610 18:19:48.207768  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.25797 (* 1 = 8.25797 loss)
+I0610 18:19:48.207774  1866 sgd_solver.cpp:106] Iteration 4400, lr = 0.01
+I0610 18:19:59.705832  1866 solver.cpp:228] Iteration 4500, loss = 8.50835
+I0610 18:19:59.705873  1866 solver.cpp:244]     Train net output #0: loss/center = 26.4924 (* 0.005 = 0.132462 loss)
+I0610 18:19:59.705881  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.48497 (* 1 = 8.48497 loss)
+I0610 18:19:59.705886  1866 sgd_solver.cpp:106] Iteration 4500, lr = 0.01
+I0610 18:20:11.189015  1866 solver.cpp:228] Iteration 4600, loss = 8.4925
+I0610 18:20:11.189054  1866 solver.cpp:244]     Train net output #0: loss/center = 34.1712 (* 0.005 = 0.170856 loss)
+I0610 18:20:11.189062  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.41053 (* 1 = 8.41053 loss)
+I0610 18:20:11.189067  1866 sgd_solver.cpp:106] Iteration 4600, lr = 0.01
+I0610 18:20:22.674356  1866 solver.cpp:228] Iteration 4700, loss = 8.4647
+I0610 18:20:22.674574  1866 solver.cpp:244]     Train net output #0: loss/center = 32.6334 (* 0.005 = 0.163167 loss)
+I0610 18:20:22.674587  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.2934 (* 1 = 8.2934 loss)
+I0610 18:20:22.674592  1866 sgd_solver.cpp:106] Iteration 4700, lr = 0.01
+I0610 18:20:34.167482  1866 solver.cpp:228] Iteration 4800, loss = 8.44279
+I0610 18:20:34.167521  1866 solver.cpp:244]     Train net output #0: loss/center = 30.1787 (* 0.005 = 0.150894 loss)
+I0610 18:20:34.167531  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.02615 (* 1 = 8.02615 loss)
+I0610 18:20:34.167536  1866 sgd_solver.cpp:106] Iteration 4800, lr = 0.01
+I0610 18:20:41.209942  1868 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface4.h5 idx 2
+I0610 18:20:41.212689  1866 hdf5_data_layer.cpp:424] Shuffled 128000 rows, first:63427
+I0610 18:20:45.629359  1866 solver.cpp:228] Iteration 4900, loss = 8.42317
+I0610 18:20:45.629410  1866 solver.cpp:244]     Train net output #0: loss/center = 30.2771 (* 0.005 = 0.151386 loss)
+I0610 18:20:45.629421  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.24761 (* 1 = 8.24761 loss)
+I0610 18:20:45.629426  1866 sgd_solver.cpp:106] Iteration 4900, lr = 0.01
+I0610 18:20:56.944133  1866 solver.cpp:454] Snapshotting to binary proto file shallow_iter_5000.caffemodel
+I0610 18:20:57.568863  1866 sgd_solver.cpp:273] Snapshotting solver state to binary proto file shallow_iter_5000.solverstate
+I0610 18:20:58.315330  1866 solver.cpp:228] Iteration 5000, loss = 8.40927
+I0610 18:20:58.315377  1866 solver.cpp:244]     Train net output #0: loss/center = 30.2314 (* 0.005 = 0.151157 loss)
+I0610 18:20:58.315387  1866 solver.cpp:244]     Train net output #1: loss/softmax = 7.98823 (* 1 = 7.98823 loss)
+I0610 18:20:58.315393  1866 sgd_solver.cpp:106] Iteration 5000, lr = 0.01
+I0610 18:21:09.723654  1866 solver.cpp:228] Iteration 5100, loss = 8.38877
+I0610 18:21:09.723691  1866 solver.cpp:244]     Train net output #0: loss/center = 33.3477 (* 0.005 = 0.166739 loss)
+I0610 18:21:09.723701  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.20309 (* 1 = 8.20309 loss)
+I0610 18:21:09.723706  1866 sgd_solver.cpp:106] Iteration 5100, lr = 0.01
+I0610 18:21:21.149785  1866 solver.cpp:228] Iteration 5200, loss = 8.37549
+I0610 18:21:21.149823  1866 solver.cpp:244]     Train net output #0: loss/center = 32.8536 (* 0.005 = 0.164268 loss)
+I0610 18:21:21.149832  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.19211 (* 1 = 8.19211 loss)
+I0610 18:21:21.149837  1866 sgd_solver.cpp:106] Iteration 5200, lr = 0.01
+I0610 18:21:32.583447  1866 solver.cpp:228] Iteration 5300, loss = 8.35478
+I0610 18:21:32.583648  1866 solver.cpp:244]     Train net output #0: loss/center = 31.593 (* 0.005 = 0.157965 loss)
+I0610 18:21:32.583660  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.02039 (* 1 = 8.02039 loss)
+I0610 18:21:32.583667  1866 sgd_solver.cpp:106] Iteration 5300, lr = 0.01
+I0610 18:21:44.005558  1866 solver.cpp:228] Iteration 5400, loss = 8.33288
+I0610 18:21:44.005597  1866 solver.cpp:244]     Train net output #0: loss/center = 36.3645 (* 0.005 = 0.181822 loss)
+I0610 18:21:44.005606  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.08752 (* 1 = 8.08752 loss)
+I0610 18:21:44.005611  1866 sgd_solver.cpp:106] Iteration 5400, lr = 0.01
+I0610 18:21:55.433995  1866 solver.cpp:228] Iteration 5500, loss = 8.30619
+I0610 18:21:55.434033  1866 solver.cpp:244]     Train net output #0: loss/center = 38.047 (* 0.005 = 0.190235 loss)
+I0610 18:21:55.434042  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.28603 (* 1 = 8.28603 loss)
+I0610 18:21:55.434047  1866 sgd_solver.cpp:106] Iteration 5500, lr = 0.01
+I0610 18:22:06.862304  1866 solver.cpp:228] Iteration 5600, loss = 8.27965
+I0610 18:22:06.862527  1866 solver.cpp:244]     Train net output #0: loss/center = 37.518 (* 0.005 = 0.18759 loss)
+I0610 18:22:06.862540  1866 solver.cpp:244]     Train net output #1: loss/softmax = 7.78885 (* 1 = 7.78885 loss)
+I0610 18:22:06.862545  1866 sgd_solver.cpp:106] Iteration 5600, lr = 0.01
+I0610 18:22:18.286926  1866 solver.cpp:228] Iteration 5700, loss = 8.24243
+I0610 18:22:18.286962  1866 solver.cpp:244]     Train net output #0: loss/center = 40.0863 (* 0.005 = 0.200431 loss)
+I0610 18:22:18.286972  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.0758 (* 1 = 8.0758 loss)
+I0610 18:22:18.286978  1866 sgd_solver.cpp:106] Iteration 5700, lr = 0.01
+I0610 18:22:29.716456  1866 solver.cpp:228] Iteration 5800, loss = 8.21437
+I0610 18:22:29.716495  1866 solver.cpp:244]     Train net output #0: loss/center = 39.9074 (* 0.005 = 0.199537 loss)
+I0610 18:22:29.716506  1866 solver.cpp:244]     Train net output #1: loss/softmax = 7.85489 (* 1 = 7.85489 loss)
+I0610 18:22:29.716511  1866 sgd_solver.cpp:106] Iteration 5800, lr = 0.01
+I0610 18:22:36.724601  1868 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface3.h5 idx 3
+I0610 18:22:36.726946  1866 hdf5_data_layer.cpp:424] Shuffled 110414 rows, first:19169
+I0610 18:22:41.158087  1866 solver.cpp:228] Iteration 5900, loss = 8.1852
+I0610 18:22:41.158280  1866 solver.cpp:244]     Train net output #0: loss/center = 45.6447 (* 0.005 = 0.228224 loss)
+I0610 18:22:41.158293  1866 solver.cpp:244]     Train net output #1: loss/softmax = 7.81883 (* 1 = 7.81883 loss)
+I0610 18:22:41.158298  1866 sgd_solver.cpp:106] Iteration 5900, lr = 0.01
+I0610 18:22:52.645651  1866 solver.cpp:228] Iteration 6000, loss = 8.15804
+I0610 18:22:52.645690  1866 solver.cpp:244]     Train net output #0: loss/center = 48.4079 (* 0.005 = 0.24204 loss)
+I0610 18:22:52.645699  1866 solver.cpp:244]     Train net output #1: loss/softmax = 7.86967 (* 1 = 7.86967 loss)
+I0610 18:22:52.645704  1866 sgd_solver.cpp:106] Iteration 6000, lr = 0.01
+I0610 18:23:04.131582  1866 solver.cpp:228] Iteration 6100, loss = 8.13018
+I0610 18:23:04.131619  1866 solver.cpp:244]     Train net output #0: loss/center = 51.9259 (* 0.005 = 0.259629 loss)
+I0610 18:23:04.131628  1866 solver.cpp:244]     Train net output #1: loss/softmax = 7.58612 (* 1 = 7.58612 loss)
+I0610 18:23:04.131633  1866 sgd_solver.cpp:106] Iteration 6100, lr = 0.01
+I0610 18:23:15.616976  1866 solver.cpp:228] Iteration 6200, loss = 8.11028
+I0610 18:23:15.617166  1866 solver.cpp:244]     Train net output #0: loss/center = 49.5595 (* 0.005 = 0.247798 loss)
+I0610 18:23:15.617177  1866 solver.cpp:244]     Train net output #1: loss/softmax = 7.70352 (* 1 = 7.70352 loss)
+I0610 18:23:15.617183  1866 sgd_solver.cpp:106] Iteration 6200, lr = 0.01
+I0610 18:23:27.102641  1866 solver.cpp:228] Iteration 6300, loss = 8.08474
+I0610 18:23:27.102680  1866 solver.cpp:244]     Train net output #0: loss/center = 54.1505 (* 0.005 = 0.270753 loss)
+I0610 18:23:27.102689  1866 solver.cpp:244]     Train net output #1: loss/softmax = 7.77062 (* 1 = 7.77062 loss)
+I0610 18:23:27.102694  1866 sgd_solver.cpp:106] Iteration 6300, lr = 0.01
+I0610 18:23:38.584758  1866 solver.cpp:228] Iteration 6400, loss = 8.05807
+I0610 18:23:38.584799  1866 solver.cpp:244]     Train net output #0: loss/center = 48.6317 (* 0.005 = 0.243158 loss)
+I0610 18:23:38.584807  1866 solver.cpp:244]     Train net output #1: loss/softmax = 7.63931 (* 1 = 7.63931 loss)
+I0610 18:23:38.584812  1866 sgd_solver.cpp:106] Iteration 6400, lr = 0.01
+I0610 18:23:50.076061  1866 solver.cpp:228] Iteration 6500, loss = 8.02379
+I0610 18:23:50.076256  1866 solver.cpp:244]     Train net output #0: loss/center = 45.5951 (* 0.005 = 0.227976 loss)
+I0610 18:23:50.076267  1866 solver.cpp:244]     Train net output #1: loss/softmax = 7.64689 (* 1 = 7.64689 loss)
+I0610 18:23:50.076273  1866 sgd_solver.cpp:106] Iteration 6500, lr = 0.01
+I0610 18:24:01.554577  1866 solver.cpp:228] Iteration 6600, loss = 7.99293
+I0610 18:24:01.554612  1866 solver.cpp:244]     Train net output #0: loss/center = 54.0304 (* 0.005 = 0.270152 loss)
+I0610 18:24:01.554621  1866 solver.cpp:244]     Train net output #1: loss/softmax = 7.62696 (* 1 = 7.62696 loss)
+I0610 18:24:01.554626  1866 sgd_solver.cpp:106] Iteration 6600, lr = 0.01
+I0610 18:24:13.040226  1866 solver.cpp:228] Iteration 6700, loss = 7.97263
+I0610 18:24:13.040264  1866 solver.cpp:244]     Train net output #0: loss/center = 54.663 (* 0.005 = 0.273315 loss)
+I0610 18:24:13.040273  1866 solver.cpp:244]     Train net output #1: loss/softmax = 8.02011 (* 1 = 8.02011 loss)
+I0610 18:24:13.040278  1866 sgd_solver.cpp:106] Iteration 6700, lr = 0.01
+I0610 18:24:15.841061  1868 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface4.h5 idx 0
+I0610 18:24:15.843807  1866 hdf5_data_layer.cpp:424] Shuffled 128000 rows, first:124594
+I0610 18:24:24.491646  1866 solver.cpp:228] Iteration 6800, loss = 7.93502
+I0610 18:24:24.491852  1866 solver.cpp:244]     Train net output #0: loss/center = 57.2929 (* 0.005 = 0.286465 loss)
+I0610 18:24:24.491865  1866 solver.cpp:244]     Train net output #1: loss/softmax = 7.38514 (* 1 = 7.38514 loss)
+I0610 18:24:24.491870  1866 sgd_solver.cpp:106] Iteration 6800, lr = 0.01
+I0610 18:24:35.934840  1866 solver.cpp:228] Iteration 6900, loss = 7.90039
+I0610 18:24:35.934880  1866 solver.cpp:244]     Train net output #0: loss/center = 54.6005 (* 0.005 = 0.273002 loss)
+I0610 18:24:35.934890  1866 solver.cpp:244]     Train net output #1: loss/softmax = 7.48407 (* 1 = 7.48407 loss)
+I0610 18:24:35.934895  1866 sgd_solver.cpp:106] Iteration 6900, lr = 0.01
+I0610 18:24:47.358999  1866 solver.cpp:228] Iteration 7000, loss = 7.87507
+I0610 18:24:47.359036  1866 solver.cpp:244]     Train net output #0: loss/center = 60.552 (* 0.005 = 0.30276 loss)
+I0610 18:24:47.359045  1866 solver.cpp:244]     Train net output #1: loss/softmax = 7.8656 (* 1 = 7.8656 loss)
+I0610 18:24:47.359051  1866 sgd_solver.cpp:106] Iteration 7000, lr = 0.01
+I0610 18:24:58.802083  1866 solver.cpp:228] Iteration 7100, loss = 7.84277
+I0610 18:24:58.802263  1866 solver.cpp:244]     Train net output #0: loss/center = 61.1064 (* 0.005 = 0.305532 loss)
+I0610 18:24:58.802274  1866 solver.cpp:244]     Train net output #1: loss/softmax = 7.51805 (* 1 = 7.51805 loss)
+I0610 18:24:58.802280  1866 sgd_solver.cpp:106] Iteration 7100, lr = 0.01
+I0610 18:25:10.233275  1866 solver.cpp:228] Iteration 7200, loss = 7.79831
+I0610 18:25:10.233314  1866 solver.cpp:244]     Train net output #0: loss/center = 64.5868 (* 0.005 = 0.322934 loss)
+I0610 18:25:10.233324  1866 solver.cpp:244]     Train net output #1: loss/softmax = 7.19009 (* 1 = 7.19009 loss)
+I0610 18:25:10.233330  1866 sgd_solver.cpp:106] Iteration 7200, lr = 0.01
+I0610 18:25:21.669973  1866 solver.cpp:228] Iteration 7300, loss = 7.77037
+I0610 18:25:21.670011  1866 solver.cpp:244]     Train net output #0: loss/center = 60.8199 (* 0.005 = 0.3041 loss)
+I0610 18:25:21.670020  1866 solver.cpp:244]     Train net output #1: loss/softmax = 7.30874 (* 1 = 7.30874 loss)
+I0610 18:25:21.670025  1866 sgd_solver.cpp:106] Iteration 7300, lr = 0.01
+I0610 18:25:33.105164  1866 solver.cpp:228] Iteration 7400, loss = 7.74105
+I0610 18:25:33.105356  1866 solver.cpp:244]     Train net output #0: loss/center = 66.7272 (* 0.005 = 0.333636 loss)
+I0610 18:25:33.105370  1866 solver.cpp:244]     Train net output #1: loss/softmax = 7.13387 (* 1 = 7.13387 loss)
+I0610 18:25:33.105376  1866 sgd_solver.cpp:106] Iteration 7400, lr = 0.01
+I0610 18:25:44.540185  1866 solver.cpp:228] Iteration 7500, loss = 7.70767
+I0610 18:25:44.540223  1866 solver.cpp:244]     Train net output #0: loss/center = 77.1516 (* 0.005 = 0.385758 loss)
+I0610 18:25:44.540232  1866 solver.cpp:244]     Train net output #1: loss/softmax = 7.4938 (* 1 = 7.4938 loss)
+I0610 18:25:44.540237  1866 sgd_solver.cpp:106] Iteration 7500, lr = 0.01
+I0610 18:25:55.970468  1866 solver.cpp:228] Iteration 7600, loss = 7.67714
+I0610 18:25:55.970506  1866 solver.cpp:244]     Train net output #0: loss/center = 74.1845 (* 0.005 = 0.370923 loss)
+I0610 18:25:55.970515  1866 solver.cpp:244]     Train net output #1: loss/softmax = 7.11968 (* 1 = 7.11968 loss)
+I0610 18:25:55.970520  1866 sgd_solver.cpp:106] Iteration 7600, lr = 0.01
+I0610 18:26:07.408901  1866 solver.cpp:228] Iteration 7700, loss = 7.64788
+I0610 18:26:07.409104  1866 solver.cpp:244]     Train net output #0: loss/center = 68.876 (* 0.005 = 0.34438 loss)
+I0610 18:26:07.409116  1866 solver.cpp:244]     Train net output #1: loss/softmax = 6.64948 (* 1 = 6.64948 loss)
+I0610 18:26:07.409122  1866 sgd_solver.cpp:106] Iteration 7700, lr = 0.01
+I0610 18:26:10.196810  1868 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface3.h5 idx 1
+I0610 18:26:10.199123  1866 hdf5_data_layer.cpp:424] Shuffled 110414 rows, first:90774
+I0610 18:26:18.892331  1866 solver.cpp:228] Iteration 7800, loss = 7.60787
+I0610 18:26:18.892369  1866 solver.cpp:244]     Train net output #0: loss/center = 74.6898 (* 0.005 = 0.373449 loss)
+I0610 18:26:18.892379  1866 solver.cpp:244]     Train net output #1: loss/softmax = 7.13141 (* 1 = 7.13141 loss)
+I0610 18:26:18.892385  1866 sgd_solver.cpp:106] Iteration 7800, lr = 0.01
+I0610 18:26:30.387405  1866 solver.cpp:228] Iteration 7900, loss = 7.55959
+I0610 18:26:30.387446  1866 solver.cpp:244]     Train net output #0: loss/center = 80.865 (* 0.005 = 0.404325 loss)
+I0610 18:26:30.387455  1866 solver.cpp:244]     Train net output #1: loss/softmax = 7.11504 (* 1 = 7.11504 loss)
+I0610 18:26:30.387460  1866 sgd_solver.cpp:106] Iteration 7900, lr = 0.01
+I0610 18:26:41.881247  1866 solver.cpp:228] Iteration 8000, loss = 7.50557
+I0610 18:26:41.881445  1866 solver.cpp:244]     Train net output #0: loss/center = 78.7288 (* 0.005 = 0.393644 loss)
+I0610 18:26:41.881458  1866 solver.cpp:244]     Train net output #1: loss/softmax = 6.7607 (* 1 = 6.7607 loss)
+I0610 18:26:41.881464  1866 sgd_solver.cpp:106] Iteration 8000, lr = 0.01
+I0610 18:26:53.374971  1866 solver.cpp:228] Iteration 8100, loss = 7.45423
+I0610 18:26:53.375010  1866 solver.cpp:244]     Train net output #0: loss/center = 75.7719 (* 0.005 = 0.37886 loss)
+I0610 18:26:53.375020  1866 solver.cpp:244]     Train net output #1: loss/softmax = 6.88376 (* 1 = 6.88376 loss)
+I0610 18:26:53.375025  1866 sgd_solver.cpp:106] Iteration 8100, lr = 0.01
+I0610 18:27:04.875751  1866 solver.cpp:228] Iteration 8200, loss = 7.4162
+I0610 18:27:04.875789  1866 solver.cpp:244]     Train net output #0: loss/center = 77.3814 (* 0.005 = 0.386907 loss)
+I0610 18:27:04.875798  1866 solver.cpp:244]     Train net output #1: loss/softmax = 6.7225 (* 1 = 6.7225 loss)
+I0610 18:27:04.875803  1866 sgd_solver.cpp:106] Iteration 8200, lr = 0.01
+I0610 18:27:16.379072  1866 solver.cpp:228] Iteration 8300, loss = 7.38289
+I0610 18:27:16.379266  1866 solver.cpp:244]     Train net output #0: loss/center = 83.5254 (* 0.005 = 0.417627 loss)
+I0610 18:27:16.379277  1866 solver.cpp:244]     Train net output #1: loss/softmax = 7.0417 (* 1 = 7.0417 loss)
+I0610 18:27:16.379283  1866 sgd_solver.cpp:106] Iteration 8300, lr = 0.01
+I0610 18:27:27.883576  1866 solver.cpp:228] Iteration 8400, loss = 7.36328
+I0610 18:27:27.883615  1866 solver.cpp:244]     Train net output #0: loss/center = 88.9829 (* 0.005 = 0.444915 loss)
+I0610 18:27:27.883623  1866 solver.cpp:244]     Train net output #1: loss/softmax = 7.04801 (* 1 = 7.04801 loss)
+I0610 18:27:27.883628  1866 sgd_solver.cpp:106] Iteration 8400, lr = 0.01
+I0610 18:27:39.377573  1866 solver.cpp:228] Iteration 8500, loss = 7.34121
+I0610 18:27:39.377609  1866 solver.cpp:244]     Train net output #0: loss/center = 79.4595 (* 0.005 = 0.397298 loss)
+I0610 18:27:39.377617  1866 solver.cpp:244]     Train net output #1: loss/softmax = 7.00116 (* 1 = 7.00116 loss)
+I0610 18:27:39.377622  1866 sgd_solver.cpp:106] Iteration 8500, lr = 0.01
+I0610 18:27:49.311063  1868 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface1.h5 idx 2
+I0610 18:27:49.314000  1866 hdf5_data_layer.cpp:424] Shuffled 128000 rows, first:126330
+I0610 18:27:50.876301  1866 solver.cpp:228] Iteration 8600, loss = 7.32411
+I0610 18:27:50.876338  1866 solver.cpp:244]     Train net output #0: loss/center = 89.1675 (* 0.005 = 0.445838 loss)
+I0610 18:27:50.876348  1866 solver.cpp:244]     Train net output #1: loss/softmax = 6.94592 (* 1 = 6.94592 loss)
+I0610 18:27:50.876353  1866 sgd_solver.cpp:106] Iteration 8600, lr = 0.01
+I0610 18:28:02.309806  1866 solver.cpp:228] Iteration 8700, loss = 7.28259
+I0610 18:28:02.309845  1866 solver.cpp:244]     Train net output #0: loss/center = 92.0077 (* 0.005 = 0.460038 loss)
+I0610 18:28:02.309855  1866 solver.cpp:244]     Train net output #1: loss/softmax = 6.70223 (* 1 = 6.70223 loss)
+I0610 18:28:02.309860  1866 sgd_solver.cpp:106] Iteration 8700, lr = 0.01
+I0610 18:28:13.737581  1866 solver.cpp:228] Iteration 8800, loss = 7.24168
+I0610 18:28:13.737618  1866 solver.cpp:244]     Train net output #0: loss/center = 98.5467 (* 0.005 = 0.492733 loss)
+I0610 18:28:13.737627  1866 solver.cpp:244]     Train net output #1: loss/softmax = 6.49644 (* 1 = 6.49644 loss)
+I0610 18:28:13.737632  1866 sgd_solver.cpp:106] Iteration 8800, lr = 0.01
+I0610 18:28:25.174700  1866 solver.cpp:228] Iteration 8900, loss = 7.19497
+I0610 18:28:25.174880  1866 solver.cpp:244]     Train net output #0: loss/center = 90.9515 (* 0.005 = 0.454758 loss)
+I0610 18:28:25.174891  1866 solver.cpp:244]     Train net output #1: loss/softmax = 6.81833 (* 1 = 6.81833 loss)
+I0610 18:28:25.174897  1866 sgd_solver.cpp:106] Iteration 8900, lr = 0.01
+I0610 18:28:36.610839  1866 solver.cpp:228] Iteration 9000, loss = 7.15553
+I0610 18:28:36.610877  1866 solver.cpp:244]     Train net output #0: loss/center = 99.0053 (* 0.005 = 0.495027 loss)
+I0610 18:28:36.610887  1866 solver.cpp:244]     Train net output #1: loss/softmax = 6.66208 (* 1 = 6.66208 loss)
+I0610 18:28:36.610891  1866 sgd_solver.cpp:106] Iteration 9000, lr = 0.01
+I0610 18:28:48.055426  1866 solver.cpp:228] Iteration 9100, loss = 7.10122
+I0610 18:28:48.055464  1866 solver.cpp:244]     Train net output #0: loss/center = 100.24 (* 0.005 = 0.501201 loss)
+I0610 18:28:48.055474  1866 solver.cpp:244]     Train net output #1: loss/softmax = 6.45468 (* 1 = 6.45468 loss)
+I0610 18:28:48.055479  1866 sgd_solver.cpp:106] Iteration 9100, lr = 0.01
+I0610 18:28:59.502349  1866 solver.cpp:228] Iteration 9200, loss = 7.07563
+I0610 18:28:59.502537  1866 solver.cpp:244]     Train net output #0: loss/center = 100.037 (* 0.005 = 0.500184 loss)
+I0610 18:28:59.502550  1866 solver.cpp:244]     Train net output #1: loss/softmax = 6.17368 (* 1 = 6.17368 loss)
+I0610 18:28:59.502557  1866 sgd_solver.cpp:106] Iteration 9200, lr = 0.01
+I0610 18:29:10.947859  1866 solver.cpp:228] Iteration 9300, loss = 7.04985
+I0610 18:29:10.947896  1866 solver.cpp:244]     Train net output #0: loss/center = 108.225 (* 0.005 = 0.541124 loss)
+I0610 18:29:10.947904  1866 solver.cpp:244]     Train net output #1: loss/softmax = 6.16819 (* 1 = 6.16819 loss)
+I0610 18:29:10.947911  1866 sgd_solver.cpp:106] Iteration 9300, lr = 0.01
+I0610 18:29:22.384827  1866 solver.cpp:228] Iteration 9400, loss = 7.01752
+I0610 18:29:22.384865  1866 solver.cpp:244]     Train net output #0: loss/center = 98.405 (* 0.005 = 0.492025 loss)
+I0610 18:29:22.384874  1866 solver.cpp:244]     Train net output #1: loss/softmax = 6.51548 (* 1 = 6.51548 loss)
+I0610 18:29:22.384879  1866 sgd_solver.cpp:106] Iteration 9400, lr = 0.01
+I0610 18:29:33.835166  1866 solver.cpp:228] Iteration 9500, loss = 6.99219
+I0610 18:29:33.835352  1866 solver.cpp:244]     Train net output #0: loss/center = 95.9267 (* 0.005 = 0.479634 loss)
+I0610 18:29:33.835364  1866 solver.cpp:244]     Train net output #1: loss/softmax = 6.22327 (* 1 = 6.22327 loss)
+I0610 18:29:33.835369  1866 sgd_solver.cpp:106] Iteration 9500, lr = 0.01
+I0610 18:29:43.712262  1868 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface2.h5 idx 3
+I0610 18:29:43.715011  1866 hdf5_data_layer.cpp:424] Shuffled 128000 rows, first:71866
+I0610 18:29:45.278815  1866 solver.cpp:228] Iteration 9600, loss = 6.96994
+I0610 18:29:45.278852  1866 solver.cpp:244]     Train net output #0: loss/center = 109.514 (* 0.005 = 0.547571 loss)
+I0610 18:29:45.278861  1866 solver.cpp:244]     Train net output #1: loss/softmax = 6.48653 (* 1 = 6.48653 loss)
+I0610 18:29:45.278867  1866 sgd_solver.cpp:106] Iteration 9600, lr = 0.01
+I0610 18:29:56.774165  1866 solver.cpp:228] Iteration 9700, loss = 6.95647
+I0610 18:29:56.774204  1866 solver.cpp:244]     Train net output #0: loss/center = 112.544 (* 0.005 = 0.562721 loss)
+I0610 18:29:56.774214  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.87965 (* 1 = 5.87965 loss)
+I0610 18:29:56.774219  1866 sgd_solver.cpp:106] Iteration 9700, lr = 0.01
+I0610 18:30:08.267161  1866 solver.cpp:228] Iteration 9800, loss = 6.92987
+I0610 18:30:08.267367  1866 solver.cpp:244]     Train net output #0: loss/center = 105.921 (* 0.005 = 0.529605 loss)
+I0610 18:30:08.267379  1866 solver.cpp:244]     Train net output #1: loss/softmax = 6.04359 (* 1 = 6.04359 loss)
+I0610 18:30:08.267385  1866 sgd_solver.cpp:106] Iteration 9800, lr = 0.01
+I0610 18:30:19.762960  1866 solver.cpp:228] Iteration 9900, loss = 6.91891
+I0610 18:30:19.762997  1866 solver.cpp:244]     Train net output #0: loss/center = 94.3012 (* 0.005 = 0.471506 loss)
+I0610 18:30:19.763006  1866 solver.cpp:244]     Train net output #1: loss/softmax = 6.39427 (* 1 = 6.39427 loss)
+I0610 18:30:19.763011  1866 sgd_solver.cpp:106] Iteration 9900, lr = 0.01
+I0610 18:30:31.148277  1866 solver.cpp:454] Snapshotting to binary proto file shallow_iter_10000.caffemodel
+I0610 18:30:31.702232  1866 sgd_solver.cpp:273] Snapshotting solver state to binary proto file shallow_iter_10000.solverstate
+I0610 18:30:32.490725  1866 solver.cpp:228] Iteration 10000, loss = 6.88819
+I0610 18:30:32.490767  1866 solver.cpp:244]     Train net output #0: loss/center = 106.003 (* 0.005 = 0.530017 loss)
+I0610 18:30:32.490775  1866 solver.cpp:244]     Train net output #1: loss/softmax = 6.02845 (* 1 = 6.02845 loss)
+I0610 18:30:32.490782  1866 sgd_solver.cpp:106] Iteration 10000, lr = 0.007
+I0610 18:30:43.987699  1866 solver.cpp:228] Iteration 10100, loss = 6.85773
+I0610 18:30:43.987892  1866 solver.cpp:244]     Train net output #0: loss/center = 108.177 (* 0.005 = 0.540884 loss)
+I0610 18:30:43.987905  1866 solver.cpp:244]     Train net output #1: loss/softmax = 6.5359 (* 1 = 6.5359 loss)
+I0610 18:30:43.987910  1866 sgd_solver.cpp:106] Iteration 10100, lr = 0.007
+I0610 18:30:55.484429  1866 solver.cpp:228] Iteration 10200, loss = 6.81093
+I0610 18:30:55.484469  1866 solver.cpp:244]     Train net output #0: loss/center = 115.945 (* 0.005 = 0.579725 loss)
+I0610 18:30:55.484479  1866 solver.cpp:244]     Train net output #1: loss/softmax = 6.24885 (* 1 = 6.24885 loss)
+I0610 18:30:55.484484  1866 sgd_solver.cpp:106] Iteration 10200, lr = 0.007
+I0610 18:31:06.979887  1866 solver.cpp:228] Iteration 10300, loss = 6.77408
+I0610 18:31:06.979925  1866 solver.cpp:244]     Train net output #0: loss/center = 107.826 (* 0.005 = 0.539129 loss)
+I0610 18:31:06.979935  1866 solver.cpp:244]     Train net output #1: loss/softmax = 6.03551 (* 1 = 6.03551 loss)
+I0610 18:31:06.979940  1866 sgd_solver.cpp:106] Iteration 10300, lr = 0.007
+I0610 18:31:18.469772  1866 solver.cpp:228] Iteration 10400, loss = 6.72718
+I0610 18:31:18.469952  1866 solver.cpp:244]     Train net output #0: loss/center = 99.4929 (* 0.005 = 0.497464 loss)
+I0610 18:31:18.469964  1866 solver.cpp:244]     Train net output #1: loss/softmax = 6.16157 (* 1 = 6.16157 loss)
+I0610 18:31:18.469970  1866 sgd_solver.cpp:106] Iteration 10400, lr = 0.007
+I0610 18:31:29.964814  1866 solver.cpp:228] Iteration 10500, loss = 6.69576
+I0610 18:31:29.964854  1866 solver.cpp:244]     Train net output #0: loss/center = 115.827 (* 0.005 = 0.579136 loss)
+I0610 18:31:29.964862  1866 solver.cpp:244]     Train net output #1: loss/softmax = 6.19363 (* 1 = 6.19363 loss)
+I0610 18:31:29.964867  1866 sgd_solver.cpp:106] Iteration 10500, lr = 0.007
+I0610 18:31:39.901101  1868 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface4.h5 idx 0
+I0610 18:31:39.903844  1866 hdf5_data_layer.cpp:424] Shuffled 128000 rows, first:111876
+I0610 18:31:41.463390  1866 solver.cpp:228] Iteration 10600, loss = 6.66579
+I0610 18:31:41.463431  1866 solver.cpp:244]     Train net output #0: loss/center = 118.263 (* 0.005 = 0.591314 loss)
+I0610 18:31:41.463440  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.91014 (* 1 = 5.91014 loss)
+I0610 18:31:41.463446  1866 sgd_solver.cpp:106] Iteration 10600, lr = 0.007
+I0610 18:31:52.900585  1866 solver.cpp:228] Iteration 10700, loss = 6.63595
+I0610 18:31:52.900805  1866 solver.cpp:244]     Train net output #0: loss/center = 100.563 (* 0.005 = 0.502813 loss)
+I0610 18:31:52.900817  1866 solver.cpp:244]     Train net output #1: loss/softmax = 6.34324 (* 1 = 6.34324 loss)
+I0610 18:31:52.900823  1866 sgd_solver.cpp:106] Iteration 10700, lr = 0.007
+I0610 18:32:04.338388  1866 solver.cpp:228] Iteration 10800, loss = 6.61543
+I0610 18:32:04.338430  1866 solver.cpp:244]     Train net output #0: loss/center = 98.9594 (* 0.005 = 0.494797 loss)
+I0610 18:32:04.338440  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.78708 (* 1 = 5.78708 loss)
+I0610 18:32:04.338445  1866 sgd_solver.cpp:106] Iteration 10800, lr = 0.007
+I0610 18:32:15.773401  1866 solver.cpp:228] Iteration 10900, loss = 6.58502
+I0610 18:32:15.773442  1866 solver.cpp:244]     Train net output #0: loss/center = 119.542 (* 0.005 = 0.597708 loss)
+I0610 18:32:15.773450  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.43115 (* 1 = 5.43115 loss)
+I0610 18:32:15.773455  1866 sgd_solver.cpp:106] Iteration 10900, lr = 0.007
+I0610 18:32:27.214409  1866 solver.cpp:228] Iteration 11000, loss = 6.55363
+I0610 18:32:27.214604  1866 solver.cpp:244]     Train net output #0: loss/center = 107.885 (* 0.005 = 0.539423 loss)
+I0610 18:32:27.214617  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.6917 (* 1 = 5.6917 loss)
+I0610 18:32:27.214622  1866 sgd_solver.cpp:106] Iteration 11000, lr = 0.007
+I0610 18:32:38.657408  1866 solver.cpp:228] Iteration 11100, loss = 6.53113
+I0610 18:32:38.657450  1866 solver.cpp:244]     Train net output #0: loss/center = 119.451 (* 0.005 = 0.597256 loss)
+I0610 18:32:38.657459  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.90774 (* 1 = 5.90774 loss)
+I0610 18:32:38.657464  1866 sgd_solver.cpp:106] Iteration 11100, lr = 0.007
+I0610 18:32:50.109580  1866 solver.cpp:228] Iteration 11200, loss = 6.5042
+I0610 18:32:50.109616  1866 solver.cpp:244]     Train net output #0: loss/center = 111.723 (* 0.005 = 0.558614 loss)
+I0610 18:32:50.109625  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.77336 (* 1 = 5.77336 loss)
+I0610 18:32:50.109632  1866 sgd_solver.cpp:106] Iteration 11200, lr = 0.007
+I0610 18:33:01.549245  1866 solver.cpp:228] Iteration 11300, loss = 6.46781
+I0610 18:33:01.549435  1866 solver.cpp:244]     Train net output #0: loss/center = 127.16 (* 0.005 = 0.635801 loss)
+I0610 18:33:01.549448  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.94088 (* 1 = 5.94088 loss)
+I0610 18:33:01.549453  1866 sgd_solver.cpp:106] Iteration 11300, lr = 0.007
+I0610 18:33:12.992056  1866 solver.cpp:228] Iteration 11400, loss = 6.44875
+I0610 18:33:12.992106  1866 solver.cpp:244]     Train net output #0: loss/center = 113.725 (* 0.005 = 0.568625 loss)
+I0610 18:33:12.992116  1866 solver.cpp:244]     Train net output #1: loss/softmax = 6.01069 (* 1 = 6.01069 loss)
+I0610 18:33:12.992121  1866 sgd_solver.cpp:106] Iteration 11400, lr = 0.007
+I0610 18:33:24.430266  1866 solver.cpp:228] Iteration 11500, loss = 6.42173
+I0610 18:33:24.430305  1866 solver.cpp:244]     Train net output #0: loss/center = 134.283 (* 0.005 = 0.671413 loss)
+I0610 18:33:24.430315  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.45626 (* 1 = 5.45626 loss)
+I0610 18:33:24.430320  1866 sgd_solver.cpp:106] Iteration 11500, lr = 0.007
+I0610 18:33:34.307762  1868 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface2.h5 idx 1
+I0610 18:33:34.310184  1866 hdf5_data_layer.cpp:424] Shuffled 110414 rows, first:13646
+I0610 18:33:35.874333  1866 solver.cpp:228] Iteration 11600, loss = 6.39186
+I0610 18:33:35.874370  1866 solver.cpp:244]     Train net output #0: loss/center = 126.54 (* 0.005 = 0.632699 loss)
+I0610 18:33:35.874379  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.73457 (* 1 = 5.73457 loss)
+I0610 18:33:35.874384  1866 sgd_solver.cpp:106] Iteration 11600, lr = 0.007
+I0610 18:33:47.369889  1866 solver.cpp:228] Iteration 11700, loss = 6.34904
+I0610 18:33:47.369927  1866 solver.cpp:244]     Train net output #0: loss/center = 124.239 (* 0.005 = 0.621197 loss)
+I0610 18:33:47.369936  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.77673 (* 1 = 5.77673 loss)
+I0610 18:33:47.369941  1866 sgd_solver.cpp:106] Iteration 11700, lr = 0.007
+I0610 18:33:58.872014  1866 solver.cpp:228] Iteration 11800, loss = 6.31302
+I0610 18:33:58.872051  1866 solver.cpp:244]     Train net output #0: loss/center = 118.826 (* 0.005 = 0.594128 loss)
+I0610 18:33:58.872061  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.10145 (* 1 = 5.10145 loss)
+I0610 18:33:58.872066  1866 sgd_solver.cpp:106] Iteration 11800, lr = 0.007
+I0610 18:34:10.365579  1866 solver.cpp:228] Iteration 11900, loss = 6.26448
+I0610 18:34:10.365766  1866 solver.cpp:244]     Train net output #0: loss/center = 144.078 (* 0.005 = 0.72039 loss)
+I0610 18:34:10.365777  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.43839 (* 1 = 5.43839 loss)
+I0610 18:34:10.365782  1866 sgd_solver.cpp:106] Iteration 11900, lr = 0.007
+I0610 18:34:21.864387  1866 solver.cpp:228] Iteration 12000, loss = 6.2344
+I0610 18:34:21.864428  1866 solver.cpp:244]     Train net output #0: loss/center = 134.089 (* 0.005 = 0.670444 loss)
+I0610 18:34:21.864437  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.94845 (* 1 = 5.94845 loss)
+I0610 18:34:21.864442  1866 sgd_solver.cpp:106] Iteration 12000, lr = 0.007
+I0610 18:34:33.365540  1866 solver.cpp:228] Iteration 12100, loss = 6.19991
+I0610 18:34:33.365579  1866 solver.cpp:244]     Train net output #0: loss/center = 117.501 (* 0.005 = 0.587507 loss)
+I0610 18:34:33.365588  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.28055 (* 1 = 5.28055 loss)
+I0610 18:34:33.365593  1866 sgd_solver.cpp:106] Iteration 12100, lr = 0.007
+I0610 18:34:44.870287  1866 solver.cpp:228] Iteration 12200, loss = 6.18088
+I0610 18:34:44.870486  1866 solver.cpp:244]     Train net output #0: loss/center = 134.486 (* 0.005 = 0.672428 loss)
+I0610 18:34:44.870501  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.62331 (* 1 = 5.62331 loss)
+I0610 18:34:44.870509  1866 sgd_solver.cpp:106] Iteration 12200, lr = 0.007
+I0610 18:34:56.371070  1866 solver.cpp:228] Iteration 12300, loss = 6.15698
+I0610 18:34:56.371109  1866 solver.cpp:244]     Train net output #0: loss/center = 136.082 (* 0.005 = 0.680408 loss)
+I0610 18:34:56.371119  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.64543 (* 1 = 5.64543 loss)
+I0610 18:34:56.371124  1866 sgd_solver.cpp:106] Iteration 12300, lr = 0.007
+I0610 18:35:07.863209  1866 solver.cpp:228] Iteration 12400, loss = 6.13625
+I0610 18:35:07.863246  1866 solver.cpp:244]     Train net output #0: loss/center = 126.951 (* 0.005 = 0.634755 loss)
+I0610 18:35:07.863255  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.42805 (* 1 = 5.42805 loss)
+I0610 18:35:07.863260  1866 sgd_solver.cpp:106] Iteration 12400, lr = 0.007
+I0610 18:35:13.543624  1868 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface3.h5 idx 2
+I0610 18:35:13.546376  1866 hdf5_data_layer.cpp:424] Shuffled 128000 rows, first:59083
+I0610 18:35:19.340981  1866 solver.cpp:228] Iteration 12500, loss = 6.10794
+I0610 18:35:19.341181  1866 solver.cpp:244]     Train net output #0: loss/center = 129.045 (* 0.005 = 0.645226 loss)
+I0610 18:35:19.341194  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.17287 (* 1 = 5.17287 loss)
+I0610 18:35:19.341199  1866 sgd_solver.cpp:106] Iteration 12500, lr = 0.007
+I0610 18:35:30.794046  1866 solver.cpp:228] Iteration 12600, loss = 6.0702
+I0610 18:35:30.794085  1866 solver.cpp:244]     Train net output #0: loss/center = 131.183 (* 0.005 = 0.655916 loss)
+I0610 18:35:30.794093  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.04988 (* 1 = 5.04988 loss)
+I0610 18:35:30.794098  1866 sgd_solver.cpp:106] Iteration 12600, lr = 0.007
+I0610 18:35:42.227185  1866 solver.cpp:228] Iteration 12700, loss = 6.01665
+I0610 18:35:42.227222  1866 solver.cpp:244]     Train net output #0: loss/center = 131.436 (* 0.005 = 0.657182 loss)
+I0610 18:35:42.227232  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.31911 (* 1 = 5.31911 loss)
+I0610 18:35:42.227237  1866 sgd_solver.cpp:106] Iteration 12700, lr = 0.007
+I0610 18:35:53.663930  1866 solver.cpp:228] Iteration 12800, loss = 5.98443
+I0610 18:35:53.664117  1866 solver.cpp:244]     Train net output #0: loss/center = 139.021 (* 0.005 = 0.695106 loss)
+I0610 18:35:53.664129  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.28531 (* 1 = 5.28531 loss)
+I0610 18:35:53.664135  1866 sgd_solver.cpp:106] Iteration 12800, lr = 0.007
+I0610 18:36:05.097728  1866 solver.cpp:228] Iteration 12900, loss = 5.94847
+I0610 18:36:05.097767  1866 solver.cpp:244]     Train net output #0: loss/center = 131.295 (* 0.005 = 0.656476 loss)
+I0610 18:36:05.097776  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.0809 (* 1 = 5.0809 loss)
+I0610 18:36:05.097781  1866 sgd_solver.cpp:106] Iteration 12900, lr = 0.007
+I0610 18:36:16.538689  1866 solver.cpp:228] Iteration 13000, loss = 5.9041
+I0610 18:36:16.538725  1866 solver.cpp:244]     Train net output #0: loss/center = 146.971 (* 0.005 = 0.734855 loss)
+I0610 18:36:16.538734  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.09389 (* 1 = 5.09389 loss)
+I0610 18:36:16.538739  1866 sgd_solver.cpp:106] Iteration 13000, lr = 0.007
+I0610 18:36:27.982270  1866 solver.cpp:228] Iteration 13100, loss = 5.88329
+I0610 18:36:27.982467  1866 solver.cpp:244]     Train net output #0: loss/center = 143.79 (* 0.005 = 0.71895 loss)
+I0610 18:36:27.982483  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.714 (* 1 = 5.714 loss)
+I0610 18:36:27.982491  1866 sgd_solver.cpp:106] Iteration 13100, lr = 0.007
+I0610 18:36:39.431448  1866 solver.cpp:228] Iteration 13200, loss = 5.87872
+I0610 18:36:39.431488  1866 solver.cpp:244]     Train net output #0: loss/center = 139.055 (* 0.005 = 0.695273 loss)
+I0610 18:36:39.431496  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.17718 (* 1 = 5.17718 loss)
+I0610 18:36:39.431501  1866 sgd_solver.cpp:106] Iteration 13200, lr = 0.007
+I0610 18:36:50.870218  1866 solver.cpp:228] Iteration 13300, loss = 5.85202
+I0610 18:36:50.870257  1866 solver.cpp:244]     Train net output #0: loss/center = 146.193 (* 0.005 = 0.730964 loss)
+I0610 18:36:50.870266  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.18755 (* 1 = 5.18755 loss)
+I0610 18:36:50.870271  1866 sgd_solver.cpp:106] Iteration 13300, lr = 0.007
+I0610 18:37:02.310864  1866 solver.cpp:228] Iteration 13400, loss = 5.83604
+I0610 18:37:02.311046  1866 solver.cpp:244]     Train net output #0: loss/center = 138.775 (* 0.005 = 0.693876 loss)
+I0610 18:37:02.311058  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.38815 (* 1 = 5.38815 loss)
+I0610 18:37:02.311064  1866 sgd_solver.cpp:106] Iteration 13400, lr = 0.007
+I0610 18:37:07.958261  1868 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface1.h5 idx 3
+I0610 18:37:07.961016  1866 hdf5_data_layer.cpp:424] Shuffled 128000 rows, first:93463
+I0610 18:37:13.779918  1866 solver.cpp:228] Iteration 13500, loss = 5.83083
+I0610 18:37:13.779955  1866 solver.cpp:244]     Train net output #0: loss/center = 149.729 (* 0.005 = 0.748644 loss)
+I0610 18:37:13.779963  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.57736 (* 1 = 4.57736 loss)
+I0610 18:37:13.779968  1866 sgd_solver.cpp:106] Iteration 13500, lr = 0.007
+I0610 18:37:25.288208  1866 solver.cpp:228] Iteration 13600, loss = 5.81594
+I0610 18:37:25.288246  1866 solver.cpp:244]     Train net output #0: loss/center = 146.113 (* 0.005 = 0.730566 loss)
+I0610 18:37:25.288255  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.39622 (* 1 = 5.39622 loss)
+I0610 18:37:25.288260  1866 sgd_solver.cpp:106] Iteration 13600, lr = 0.007
+I0610 18:37:36.790897  1866 solver.cpp:228] Iteration 13700, loss = 5.79438
+I0610 18:37:36.791113  1866 solver.cpp:244]     Train net output #0: loss/center = 136.57 (* 0.005 = 0.682848 loss)
+I0610 18:37:36.791126  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.13242 (* 1 = 5.13242 loss)
+I0610 18:37:36.791131  1866 sgd_solver.cpp:106] Iteration 13700, lr = 0.007
+I0610 18:37:48.299597  1866 solver.cpp:228] Iteration 13800, loss = 5.77659
+I0610 18:37:48.299634  1866 solver.cpp:244]     Train net output #0: loss/center = 144.476 (* 0.005 = 0.72238 loss)
+I0610 18:37:48.299643  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.98054 (* 1 = 4.98054 loss)
+I0610 18:37:48.299649  1866 sgd_solver.cpp:106] Iteration 13800, lr = 0.007
+I0610 18:37:59.798257  1866 solver.cpp:228] Iteration 13900, loss = 5.76035
+I0610 18:37:59.798295  1866 solver.cpp:244]     Train net output #0: loss/center = 163.819 (* 0.005 = 0.819093 loss)
+I0610 18:37:59.798305  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.95105 (* 1 = 4.95105 loss)
+I0610 18:37:59.798310  1866 sgd_solver.cpp:106] Iteration 13900, lr = 0.007
+I0610 18:38:11.294780  1866 solver.cpp:228] Iteration 14000, loss = 5.7397
+I0610 18:38:11.294970  1866 solver.cpp:244]     Train net output #0: loss/center = 149.054 (* 0.005 = 0.74527 loss)
+I0610 18:38:11.294981  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.02007 (* 1 = 5.02007 loss)
+I0610 18:38:11.294986  1866 sgd_solver.cpp:106] Iteration 14000, lr = 0.007
+I0610 18:38:22.804620  1866 solver.cpp:228] Iteration 14100, loss = 5.71641
+I0610 18:38:22.804658  1866 solver.cpp:244]     Train net output #0: loss/center = 134.176 (* 0.005 = 0.670881 loss)
+I0610 18:38:22.804667  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.01981 (* 1 = 5.01981 loss)
+I0610 18:38:22.804673  1866 sgd_solver.cpp:106] Iteration 14100, lr = 0.007
+I0610 18:38:34.306582  1866 solver.cpp:228] Iteration 14200, loss = 5.69827
+I0610 18:38:34.306622  1866 solver.cpp:244]     Train net output #0: loss/center = 138.319 (* 0.005 = 0.691595 loss)
+I0610 18:38:34.306630  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.26401 (* 1 = 5.26401 loss)
+I0610 18:38:34.306635  1866 sgd_solver.cpp:106] Iteration 14200, lr = 0.007
+I0610 18:38:45.811465  1866 solver.cpp:228] Iteration 14300, loss = 5.68465
+I0610 18:38:45.811666  1866 solver.cpp:244]     Train net output #0: loss/center = 153.98 (* 0.005 = 0.769898 loss)
+I0610 18:38:45.811677  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.79857 (* 1 = 4.79857 loss)
+I0610 18:38:45.811683  1866 sgd_solver.cpp:106] Iteration 14300, lr = 0.007
+I0610 18:38:57.322805  1866 solver.cpp:228] Iteration 14400, loss = 5.66684
+I0610 18:38:57.322844  1866 solver.cpp:244]     Train net output #0: loss/center = 158.862 (* 0.005 = 0.794312 loss)
+I0610 18:38:57.322854  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.7375 (* 1 = 4.7375 loss)
+I0610 18:38:57.322859  1866 sgd_solver.cpp:106] Iteration 14400, lr = 0.007
+I0610 18:39:03.002300  1868 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface3.h5 idx 0
+I0610 18:39:03.005046  1866 hdf5_data_layer.cpp:424] Shuffled 128000 rows, first:38372
+I0610 18:39:08.786237  1866 solver.cpp:228] Iteration 14500, loss = 5.65266
+I0610 18:39:08.786273  1866 solver.cpp:244]     Train net output #0: loss/center = 147.542 (* 0.005 = 0.737708 loss)
+I0610 18:39:08.786283  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.67563 (* 1 = 4.67563 loss)
+I0610 18:39:08.786288  1866 sgd_solver.cpp:106] Iteration 14500, lr = 0.007
+I0610 18:39:20.228754  1866 solver.cpp:228] Iteration 14600, loss = 5.64234
+I0610 18:39:20.228970  1866 solver.cpp:244]     Train net output #0: loss/center = 156.635 (* 0.005 = 0.783173 loss)
+I0610 18:39:20.228981  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.0195 (* 1 = 5.0195 loss)
+I0610 18:39:20.228987  1866 sgd_solver.cpp:106] Iteration 14600, lr = 0.007
+I0610 18:39:31.675518  1866 solver.cpp:228] Iteration 14700, loss = 5.62583
+I0610 18:39:31.675556  1866 solver.cpp:244]     Train net output #0: loss/center = 157.435 (* 0.005 = 0.787174 loss)
+I0610 18:39:31.675565  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.91766 (* 1 = 4.91766 loss)
+I0610 18:39:31.675570  1866 sgd_solver.cpp:106] Iteration 14700, lr = 0.007
+I0610 18:39:43.111850  1866 solver.cpp:228] Iteration 14800, loss = 5.61224
+I0610 18:39:43.111888  1866 solver.cpp:244]     Train net output #0: loss/center = 137.479 (* 0.005 = 0.687395 loss)
+I0610 18:39:43.111897  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.11171 (* 1 = 5.11171 loss)
+I0610 18:39:43.111902  1866 sgd_solver.cpp:106] Iteration 14800, lr = 0.007
+I0610 18:39:54.558681  1866 solver.cpp:228] Iteration 14900, loss = 5.59572
+I0610 18:39:54.558868  1866 solver.cpp:244]     Train net output #0: loss/center = 152.917 (* 0.005 = 0.764587 loss)
+I0610 18:39:54.558881  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.67956 (* 1 = 4.67956 loss)
+I0610 18:39:54.558887  1866 sgd_solver.cpp:106] Iteration 14900, lr = 0.007
+I0610 18:40:05.890487  1866 solver.cpp:454] Snapshotting to binary proto file shallow_iter_15000.caffemodel
+I0610 18:40:06.500151  1866 sgd_solver.cpp:273] Snapshotting solver state to binary proto file shallow_iter_15000.solverstate
+I0610 18:40:07.292646  1866 solver.cpp:228] Iteration 15000, loss = 5.56964
+I0610 18:40:07.292692  1866 solver.cpp:244]     Train net output #0: loss/center = 157.086 (* 0.005 = 0.785431 loss)
+I0610 18:40:07.292701  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.79309 (* 1 = 4.79309 loss)
+I0610 18:40:07.292708  1866 sgd_solver.cpp:106] Iteration 15000, lr = 0.007
+I0610 18:40:18.728237  1866 solver.cpp:228] Iteration 15100, loss = 5.53995
+I0610 18:40:18.728274  1866 solver.cpp:244]     Train net output #0: loss/center = 154.76 (* 0.005 = 0.7738 loss)
+I0610 18:40:18.728284  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.80238 (* 1 = 4.80238 loss)
+I0610 18:40:18.728289  1866 sgd_solver.cpp:106] Iteration 15100, lr = 0.007
+I0610 18:40:30.167984  1866 solver.cpp:228] Iteration 15200, loss = 5.52045
+I0610 18:40:30.168157  1866 solver.cpp:244]     Train net output #0: loss/center = 159.766 (* 0.005 = 0.798828 loss)
+I0610 18:40:30.168169  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.74222 (* 1 = 4.74222 loss)
+I0610 18:40:30.168175  1866 sgd_solver.cpp:106] Iteration 15200, lr = 0.007
+I0610 18:40:41.618705  1866 solver.cpp:228] Iteration 15300, loss = 5.50071
+I0610 18:40:41.618754  1866 solver.cpp:244]     Train net output #0: loss/center = 148.805 (* 0.005 = 0.744027 loss)
+I0610 18:40:41.618763  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.82091 (* 1 = 4.82091 loss)
+I0610 18:40:41.618768  1866 sgd_solver.cpp:106] Iteration 15300, lr = 0.007
+I0610 18:40:53.068934  1866 solver.cpp:228] Iteration 15400, loss = 5.47599
+I0610 18:40:53.068974  1866 solver.cpp:244]     Train net output #0: loss/center = 160.573 (* 0.005 = 0.802863 loss)
+I0610 18:40:53.068984  1866 solver.cpp:244]     Train net output #1: loss/softmax = 5.07405 (* 1 = 5.07405 loss)
+I0610 18:40:53.068989  1866 sgd_solver.cpp:106] Iteration 15400, lr = 0.007
+I0610 18:40:58.719784  1868 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface1.h5 idx 1
+I0610 18:40:58.722525  1866 hdf5_data_layer.cpp:424] Shuffled 128000 rows, first:100991
+I0610 18:41:04.538367  1866 solver.cpp:228] Iteration 15500, loss = 5.43702
+I0610 18:41:04.538591  1866 solver.cpp:244]     Train net output #0: loss/center = 157.42 (* 0.005 = 0.7871 loss)
+I0610 18:41:04.538604  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.57574 (* 1 = 4.57574 loss)
+I0610 18:41:04.538610  1866 sgd_solver.cpp:106] Iteration 15500, lr = 0.007
+I0610 18:41:16.041564  1866 solver.cpp:228] Iteration 15600, loss = 5.38589
+I0610 18:41:16.041601  1866 solver.cpp:244]     Train net output #0: loss/center = 159.494 (* 0.005 = 0.797469 loss)
+I0610 18:41:16.041610  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.2309 (* 1 = 4.2309 loss)
+I0610 18:41:16.041615  1866 sgd_solver.cpp:106] Iteration 15600, lr = 0.007
+I0610 18:41:27.544309  1866 solver.cpp:228] Iteration 15700, loss = 5.33627
+I0610 18:41:27.544348  1866 solver.cpp:244]     Train net output #0: loss/center = 152.993 (* 0.005 = 0.764964 loss)
+I0610 18:41:27.544356  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.40568 (* 1 = 4.40568 loss)
+I0610 18:41:27.544361  1866 sgd_solver.cpp:106] Iteration 15700, lr = 0.007
+I0610 18:41:39.057456  1866 solver.cpp:228] Iteration 15800, loss = 5.27714
+I0610 18:41:39.057646  1866 solver.cpp:244]     Train net output #0: loss/center = 166.74 (* 0.005 = 0.8337 loss)
+I0610 18:41:39.057657  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.34699 (* 1 = 4.34699 loss)
+I0610 18:41:39.057663  1866 sgd_solver.cpp:106] Iteration 15800, lr = 0.007
+I0610 18:41:50.567595  1866 solver.cpp:228] Iteration 15900, loss = 5.22564
+I0610 18:41:50.567634  1866 solver.cpp:244]     Train net output #0: loss/center = 194.161 (* 0.005 = 0.970804 loss)
+I0610 18:41:50.567643  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.60758 (* 1 = 4.60758 loss)
+I0610 18:41:50.567648  1866 sgd_solver.cpp:106] Iteration 15900, lr = 0.007
+I0610 18:42:02.064694  1866 solver.cpp:228] Iteration 16000, loss = 5.20244
+I0610 18:42:02.064733  1866 solver.cpp:244]     Train net output #0: loss/center = 161.351 (* 0.005 = 0.806754 loss)
+I0610 18:42:02.064743  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.04079 (* 1 = 4.04079 loss)
+I0610 18:42:02.064749  1866 sgd_solver.cpp:106] Iteration 16000, lr = 0.007
+I0610 18:42:13.569649  1866 solver.cpp:228] Iteration 16100, loss = 5.18878
+I0610 18:42:13.569835  1866 solver.cpp:244]     Train net output #0: loss/center = 154.303 (* 0.005 = 0.771515 loss)
+I0610 18:42:13.569847  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.39745 (* 1 = 4.39745 loss)
+I0610 18:42:13.569854  1866 sgd_solver.cpp:106] Iteration 16100, lr = 0.007
+I0610 18:42:25.080695  1866 solver.cpp:228] Iteration 16200, loss = 5.16938
+I0610 18:42:25.080732  1866 solver.cpp:244]     Train net output #0: loss/center = 167.198 (* 0.005 = 0.835988 loss)
+I0610 18:42:25.080741  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.31108 (* 1 = 4.31108 loss)
+I0610 18:42:25.080747  1866 sgd_solver.cpp:106] Iteration 16200, lr = 0.007
+I0610 18:42:36.591603  1866 solver.cpp:228] Iteration 16300, loss = 5.15689
+I0610 18:42:36.591641  1866 solver.cpp:244]     Train net output #0: loss/center = 177.725 (* 0.005 = 0.888623 loss)
+I0610 18:42:36.591651  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.29374 (* 1 = 4.29374 loss)
+I0610 18:42:36.591656  1866 sgd_solver.cpp:106] Iteration 16300, lr = 0.007
+I0610 18:42:48.105192  1866 solver.cpp:228] Iteration 16400, loss = 5.14284
+I0610 18:42:48.105370  1866 solver.cpp:244]     Train net output #0: loss/center = 171.12 (* 0.005 = 0.8556 loss)
+I0610 18:42:48.105381  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.40471 (* 1 = 4.40471 loss)
+I0610 18:42:48.105387  1866 sgd_solver.cpp:106] Iteration 16400, lr = 0.007
+I0610 18:42:53.791604  1868 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface4.h5 idx 2
+I0610 18:42:53.794353  1866 hdf5_data_layer.cpp:424] Shuffled 128000 rows, first:43267
+I0610 18:42:59.584262  1866 solver.cpp:228] Iteration 16500, loss = 5.12002
+I0610 18:42:59.584300  1866 solver.cpp:244]     Train net output #0: loss/center = 171.428 (* 0.005 = 0.857139 loss)
+I0610 18:42:59.584309  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.34762 (* 1 = 4.34762 loss)
+I0610 18:42:59.584314  1866 sgd_solver.cpp:106] Iteration 16500, lr = 0.007
+I0610 18:43:11.031011  1866 solver.cpp:228] Iteration 16600, loss = 5.10932
+I0610 18:43:11.031051  1866 solver.cpp:244]     Train net output #0: loss/center = 163.282 (* 0.005 = 0.81641 loss)
+I0610 18:43:11.031060  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.52117 (* 1 = 4.52117 loss)
+I0610 18:43:11.031065  1866 sgd_solver.cpp:106] Iteration 16600, lr = 0.007
+I0610 18:43:22.480854  1866 solver.cpp:228] Iteration 16700, loss = 5.08921
+I0610 18:43:22.481055  1866 solver.cpp:244]     Train net output #0: loss/center = 159.994 (* 0.005 = 0.79997 loss)
+I0610 18:43:22.481066  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.96936 (* 1 = 3.96936 loss)
+I0610 18:43:22.481071  1866 sgd_solver.cpp:106] Iteration 16700, lr = 0.007
+I0610 18:43:33.937162  1866 solver.cpp:228] Iteration 16800, loss = 5.07038
+I0610 18:43:33.937201  1866 solver.cpp:244]     Train net output #0: loss/center = 168.364 (* 0.005 = 0.841822 loss)
+I0610 18:43:33.937211  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.50657 (* 1 = 4.50657 loss)
+I0610 18:43:33.937216  1866 sgd_solver.cpp:106] Iteration 16800, lr = 0.007
+I0610 18:43:45.387368  1866 solver.cpp:228] Iteration 16900, loss = 5.06516
+I0610 18:43:45.387408  1866 solver.cpp:244]     Train net output #0: loss/center = 168.659 (* 0.005 = 0.843295 loss)
+I0610 18:43:45.387428  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.03797 (* 1 = 4.03797 loss)
+I0610 18:43:45.387434  1866 sgd_solver.cpp:106] Iteration 16900, lr = 0.007
+I0610 18:43:56.837193  1866 solver.cpp:228] Iteration 17000, loss = 5.05299
+I0610 18:43:56.837386  1866 solver.cpp:244]     Train net output #0: loss/center = 172.496 (* 0.005 = 0.862481 loss)
+I0610 18:43:56.837399  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.4492 (* 1 = 4.4492 loss)
+I0610 18:43:56.837404  1866 sgd_solver.cpp:106] Iteration 17000, lr = 0.007
+I0610 18:44:08.279995  1866 solver.cpp:228] Iteration 17100, loss = 5.0367
+I0610 18:44:08.280035  1866 solver.cpp:244]     Train net output #0: loss/center = 183.287 (* 0.005 = 0.916435 loss)
+I0610 18:44:08.280043  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.30943 (* 1 = 4.30943 loss)
+I0610 18:44:08.280048  1866 sgd_solver.cpp:106] Iteration 17100, lr = 0.007
+I0610 18:44:19.720978  1866 solver.cpp:228] Iteration 17200, loss = 5.0316
+I0610 18:44:19.721015  1866 solver.cpp:244]     Train net output #0: loss/center = 168.599 (* 0.005 = 0.842996 loss)
+I0610 18:44:19.721025  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.88806 (* 1 = 3.88806 loss)
+I0610 18:44:19.721030  1866 sgd_solver.cpp:106] Iteration 17200, lr = 0.007
+I0610 18:44:31.169909  1866 solver.cpp:228] Iteration 17300, loss = 5.02912
+I0610 18:44:31.170089  1866 solver.cpp:244]     Train net output #0: loss/center = 184.845 (* 0.005 = 0.924226 loss)
+I0610 18:44:31.170101  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.95397 (* 1 = 3.95397 loss)
+I0610 18:44:31.170107  1866 sgd_solver.cpp:106] Iteration 17300, lr = 0.007
+I0610 18:44:42.625257  1866 solver.cpp:228] Iteration 17400, loss = 5.00849
+I0610 18:44:42.625298  1866 solver.cpp:244]     Train net output #0: loss/center = 179.562 (* 0.005 = 0.897812 loss)
+I0610 18:44:42.625306  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.94422 (* 1 = 3.94422 loss)
+I0610 18:44:42.625311  1866 sgd_solver.cpp:106] Iteration 17400, lr = 0.007
+I0610 18:44:48.274752  1868 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface2.h5 idx 3
+I0610 18:44:48.277133  1866 hdf5_data_layer.cpp:424] Shuffled 110414 rows, first:57541
+I0610 18:44:54.099258  1866 solver.cpp:228] Iteration 17500, loss = 5.01883
+I0610 18:44:54.099297  1866 solver.cpp:244]     Train net output #0: loss/center = 164.78 (* 0.005 = 0.823898 loss)
+I0610 18:44:54.099305  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.99294 (* 1 = 3.99294 loss)
+I0610 18:44:54.099310  1866 sgd_solver.cpp:106] Iteration 17500, lr = 0.007
+I0610 18:45:05.604344  1866 solver.cpp:228] Iteration 17600, loss = 5.03989
+I0610 18:45:05.604559  1866 solver.cpp:244]     Train net output #0: loss/center = 170.251 (* 0.005 = 0.851257 loss)
+I0610 18:45:05.604573  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.34747 (* 1 = 4.34747 loss)
+I0610 18:45:05.604578  1866 sgd_solver.cpp:106] Iteration 17600, lr = 0.007
+I0610 18:45:17.115128  1866 solver.cpp:228] Iteration 17700, loss = 5.0411
+I0610 18:45:17.115165  1866 solver.cpp:244]     Train net output #0: loss/center = 157.047 (* 0.005 = 0.785235 loss)
+I0610 18:45:17.115175  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.50782 (* 1 = 4.50782 loss)
+I0610 18:45:17.115180  1866 sgd_solver.cpp:106] Iteration 17700, lr = 0.007
+I0610 18:45:28.627225  1866 solver.cpp:228] Iteration 17800, loss = 5.04495
+I0610 18:45:28.627264  1866 solver.cpp:244]     Train net output #0: loss/center = 176.777 (* 0.005 = 0.883886 loss)
+I0610 18:45:28.627274  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.09415 (* 1 = 4.09415 loss)
+I0610 18:45:28.627279  1866 sgd_solver.cpp:106] Iteration 17800, lr = 0.007
+I0610 18:45:40.135084  1866 solver.cpp:228] Iteration 17900, loss = 5.04631
+I0610 18:45:40.135263  1866 solver.cpp:244]     Train net output #0: loss/center = 156.674 (* 0.005 = 0.783368 loss)
+I0610 18:45:40.135275  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.88484 (* 1 = 3.88484 loss)
+I0610 18:45:40.135282  1866 sgd_solver.cpp:106] Iteration 17900, lr = 0.007
+I0610 18:45:51.641427  1866 solver.cpp:228] Iteration 18000, loss = 5.03978
+I0610 18:45:51.641464  1866 solver.cpp:244]     Train net output #0: loss/center = 172.08 (* 0.005 = 0.8604 loss)
+I0610 18:45:51.641474  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.9825 (* 1 = 3.9825 loss)
+I0610 18:45:51.641479  1866 sgd_solver.cpp:106] Iteration 18000, lr = 0.007
+I0610 18:46:03.146224  1866 solver.cpp:228] Iteration 18100, loss = 5.01373
+I0610 18:46:03.146263  1866 solver.cpp:244]     Train net output #0: loss/center = 172.901 (* 0.005 = 0.864506 loss)
+I0610 18:46:03.146272  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.32449 (* 1 = 4.32449 loss)
+I0610 18:46:03.146277  1866 sgd_solver.cpp:106] Iteration 18100, lr = 0.007
+I0610 18:46:14.659634  1866 solver.cpp:228] Iteration 18200, loss = 5.00181
+I0610 18:46:14.659816  1866 solver.cpp:244]     Train net output #0: loss/center = 169.834 (* 0.005 = 0.849172 loss)
+I0610 18:46:14.659828  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.53859 (* 1 = 3.53859 loss)
+I0610 18:46:14.659834  1866 sgd_solver.cpp:106] Iteration 18200, lr = 0.007
+I0610 18:46:26.163230  1866 solver.cpp:228] Iteration 18300, loss = 4.9794
+I0610 18:46:26.163269  1866 solver.cpp:244]     Train net output #0: loss/center = 177.084 (* 0.005 = 0.885421 loss)
+I0610 18:46:26.163278  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.89515 (* 1 = 3.89515 loss)
+I0610 18:46:26.163283  1866 sgd_solver.cpp:106] Iteration 18300, lr = 0.007
+I0610 18:46:27.584208  1868 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface3.h5 idx 0
+I0610 18:46:27.586956  1866 hdf5_data_layer.cpp:424] Shuffled 128000 rows, first:23266
+I0610 18:46:37.615188  1866 solver.cpp:228] Iteration 18400, loss = 4.97156
+I0610 18:46:37.615226  1866 solver.cpp:244]     Train net output #0: loss/center = 184.627 (* 0.005 = 0.923133 loss)
+I0610 18:46:37.615234  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.94377 (* 1 = 3.94377 loss)
+I0610 18:46:37.615239  1866 sgd_solver.cpp:106] Iteration 18400, lr = 0.007
+I0610 18:46:49.064805  1866 solver.cpp:228] Iteration 18500, loss = 4.93928
+I0610 18:46:49.065017  1866 solver.cpp:244]     Train net output #0: loss/center = 167.642 (* 0.005 = 0.838211 loss)
+I0610 18:46:49.065029  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.50159 (* 1 = 3.50159 loss)
+I0610 18:46:49.065035  1866 sgd_solver.cpp:106] Iteration 18500, lr = 0.007
+I0610 18:47:00.512617  1866 solver.cpp:228] Iteration 18600, loss = 4.90921
+I0610 18:47:00.512655  1866 solver.cpp:244]     Train net output #0: loss/center = 173.794 (* 0.005 = 0.868971 loss)
+I0610 18:47:00.512665  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.11101 (* 1 = 4.11101 loss)
+I0610 18:47:00.512670  1866 sgd_solver.cpp:106] Iteration 18600, lr = 0.007
+I0610 18:47:11.963683  1866 solver.cpp:228] Iteration 18700, loss = 4.87961
+I0610 18:47:11.963721  1866 solver.cpp:244]     Train net output #0: loss/center = 173.52 (* 0.005 = 0.8676 loss)
+I0610 18:47:11.963732  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.07656 (* 1 = 4.07656 loss)
+I0610 18:47:11.963737  1866 sgd_solver.cpp:106] Iteration 18700, lr = 0.007
+I0610 18:47:23.415433  1866 solver.cpp:228] Iteration 18800, loss = 4.86649
+I0610 18:47:23.415621  1866 solver.cpp:244]     Train net output #0: loss/center = 167.39 (* 0.005 = 0.836948 loss)
+I0610 18:47:23.415632  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.07077 (* 1 = 4.07077 loss)
+I0610 18:47:23.415638  1866 sgd_solver.cpp:106] Iteration 18800, lr = 0.007
+I0610 18:47:34.865645  1866 solver.cpp:228] Iteration 18900, loss = 4.83166
+I0610 18:47:34.865684  1866 solver.cpp:244]     Train net output #0: loss/center = 188.369 (* 0.005 = 0.941846 loss)
+I0610 18:47:34.865692  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.95941 (* 1 = 3.95941 loss)
+I0610 18:47:34.865697  1866 sgd_solver.cpp:106] Iteration 18900, lr = 0.007
+I0610 18:47:46.322046  1866 solver.cpp:228] Iteration 19000, loss = 4.81054
+I0610 18:47:46.322083  1866 solver.cpp:244]     Train net output #0: loss/center = 173.723 (* 0.005 = 0.868615 loss)
+I0610 18:47:46.322093  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.3225 (* 1 = 4.3225 loss)
+I0610 18:47:46.322098  1866 sgd_solver.cpp:106] Iteration 19000, lr = 0.007
+I0610 18:47:57.763571  1866 solver.cpp:228] Iteration 19100, loss = 4.80584
+I0610 18:47:57.763753  1866 solver.cpp:244]     Train net output #0: loss/center = 191.413 (* 0.005 = 0.957064 loss)
+I0610 18:47:57.763766  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.71219 (* 1 = 3.71219 loss)
+I0610 18:47:57.763772  1866 sgd_solver.cpp:106] Iteration 19100, lr = 0.007
+I0610 18:48:09.209543  1866 solver.cpp:228] Iteration 19200, loss = 4.79409
+I0610 18:48:09.209584  1866 solver.cpp:244]     Train net output #0: loss/center = 176.399 (* 0.005 = 0.881995 loss)
+I0610 18:48:09.209594  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.79445 (* 1 = 3.79445 loss)
+I0610 18:48:09.209599  1866 sgd_solver.cpp:106] Iteration 19200, lr = 0.007
+I0610 18:48:20.652127  1866 solver.cpp:228] Iteration 19300, loss = 4.77225
+I0610 18:48:20.652166  1866 solver.cpp:244]     Train net output #0: loss/center = 172.981 (* 0.005 = 0.864907 loss)
+I0610 18:48:20.652175  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.47484 (* 1 = 3.47484 loss)
+I0610 18:48:20.652180  1866 sgd_solver.cpp:106] Iteration 19300, lr = 0.007
+I0610 18:48:22.066817  1868 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface1.h5 idx 1
+I0610 18:48:22.069543  1866 hdf5_data_layer.cpp:424] Shuffled 128000 rows, first:30388
+I0610 18:48:32.153867  1866 solver.cpp:228] Iteration 19400, loss = 4.73482
+I0610 18:48:32.154054  1866 solver.cpp:244]     Train net output #0: loss/center = 168.378 (* 0.005 = 0.841889 loss)
+I0610 18:48:32.154065  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.36916 (* 1 = 3.36916 loss)
+I0610 18:48:32.154072  1866 sgd_solver.cpp:106] Iteration 19400, lr = 0.007
+I0610 18:48:43.647806  1866 solver.cpp:228] Iteration 19500, loss = 4.6976
+I0610 18:48:43.647845  1866 solver.cpp:244]     Train net output #0: loss/center = 172.889 (* 0.005 = 0.864444 loss)
+I0610 18:48:43.647855  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.73053 (* 1 = 3.73053 loss)
+I0610 18:48:43.647860  1866 sgd_solver.cpp:106] Iteration 19500, lr = 0.007
+I0610 18:48:55.153193  1866 solver.cpp:228] Iteration 19600, loss = 4.6531
+I0610 18:48:55.153233  1866 solver.cpp:244]     Train net output #0: loss/center = 183.722 (* 0.005 = 0.91861 loss)
+I0610 18:48:55.153241  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.50041 (* 1 = 3.50041 loss)
+I0610 18:48:55.153246  1866 sgd_solver.cpp:106] Iteration 19600, lr = 0.007
+I0610 18:49:06.661453  1866 solver.cpp:228] Iteration 19700, loss = 4.60802
+I0610 18:49:06.661659  1866 solver.cpp:244]     Train net output #0: loss/center = 175.675 (* 0.005 = 0.878376 loss)
+I0610 18:49:06.661670  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.67007 (* 1 = 3.67007 loss)
+I0610 18:49:06.661676  1866 sgd_solver.cpp:106] Iteration 19700, lr = 0.007
+I0610 18:49:18.170805  1866 solver.cpp:228] Iteration 19800, loss = 4.56645
+I0610 18:49:18.170845  1866 solver.cpp:244]     Train net output #0: loss/center = 173.55 (* 0.005 = 0.867748 loss)
+I0610 18:49:18.170855  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.97013 (* 1 = 3.97013 loss)
+I0610 18:49:18.170859  1866 sgd_solver.cpp:106] Iteration 19800, lr = 0.007
+I0610 18:49:29.678510  1866 solver.cpp:228] Iteration 19900, loss = 4.56227
+I0610 18:49:29.678550  1866 solver.cpp:244]     Train net output #0: loss/center = 184.938 (* 0.005 = 0.924691 loss)
+I0610 18:49:29.678560  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.71877 (* 1 = 3.71877 loss)
+I0610 18:49:29.678565  1866 sgd_solver.cpp:106] Iteration 19900, lr = 0.007
+I0610 18:49:41.074692  1866 solver.cpp:454] Snapshotting to binary proto file shallow_iter_20000.caffemodel
+I0610 18:49:41.649425  1866 sgd_solver.cpp:273] Snapshotting solver state to binary proto file shallow_iter_20000.solverstate
+I0610 18:49:42.422866  1866 solver.cpp:228] Iteration 20000, loss = 4.55392
+I0610 18:49:42.422907  1866 solver.cpp:244]     Train net output #0: loss/center = 171.925 (* 0.005 = 0.859626 loss)
+I0610 18:49:42.422916  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.79982 (* 1 = 3.79982 loss)
+I0610 18:49:42.422924  1866 sgd_solver.cpp:106] Iteration 20000, lr = 0.0049
+I0610 18:49:53.920321  1866 solver.cpp:228] Iteration 20100, loss = 4.53329
+I0610 18:49:53.920361  1866 solver.cpp:244]     Train net output #0: loss/center = 190.441 (* 0.005 = 0.952206 loss)
+I0610 18:49:53.920369  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.65721 (* 1 = 3.65721 loss)
+I0610 18:49:53.920375  1866 sgd_solver.cpp:106] Iteration 20100, lr = 0.0049
+I0610 18:50:05.424306  1866 solver.cpp:228] Iteration 20200, loss = 4.53029
+I0610 18:50:05.424346  1866 solver.cpp:244]     Train net output #0: loss/center = 191.776 (* 0.005 = 0.95888 loss)
+I0610 18:50:05.424355  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.53504 (* 1 = 3.53504 loss)
+I0610 18:50:05.424361  1866 sgd_solver.cpp:106] Iteration 20200, lr = 0.0049
+I0610 18:50:16.932668  1866 solver.cpp:228] Iteration 20300, loss = 4.513
+I0610 18:50:16.932883  1866 solver.cpp:244]     Train net output #0: loss/center = 181.102 (* 0.005 = 0.905508 loss)
+I0610 18:50:16.932895  1866 solver.cpp:244]     Train net output #1: loss/softmax = 4.00154 (* 1 = 4.00154 loss)
+I0610 18:50:16.932901  1866 sgd_solver.cpp:106] Iteration 20300, lr = 0.0049
+I0610 18:50:18.356395  1868 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface2.h5 idx 2
+I0610 18:50:18.359190  1866 hdf5_data_layer.cpp:424] Shuffled 128000 rows, first:23071
+I0610 18:50:28.388640  1866 solver.cpp:228] Iteration 20400, loss = 4.49151
+I0610 18:50:28.388677  1866 solver.cpp:244]     Train net output #0: loss/center = 186.314 (* 0.005 = 0.931571 loss)
+I0610 18:50:28.388687  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.98096 (* 1 = 3.98096 loss)
+I0610 18:50:28.388692  1866 sgd_solver.cpp:106] Iteration 20400, lr = 0.0049
+I0610 18:50:39.836036  1866 solver.cpp:228] Iteration 20500, loss = 4.47066
+I0610 18:50:39.836076  1866 solver.cpp:244]     Train net output #0: loss/center = 185.309 (* 0.005 = 0.926544 loss)
+I0610 18:50:39.836084  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.54232 (* 1 = 3.54232 loss)
+I0610 18:50:39.836091  1866 sgd_solver.cpp:106] Iteration 20500, lr = 0.0049
+I0610 18:50:51.286545  1866 solver.cpp:228] Iteration 20600, loss = 4.45772
+I0610 18:50:51.286761  1866 solver.cpp:244]     Train net output #0: loss/center = 183.034 (* 0.005 = 0.915171 loss)
+I0610 18:50:51.286773  1866 solver.cpp:244]     Train net output #1: loss/softmax = 2.95262 (* 1 = 2.95262 loss)
+I0610 18:50:51.286779  1866 sgd_solver.cpp:106] Iteration 20600, lr = 0.0049
+I0610 18:51:02.742591  1866 solver.cpp:228] Iteration 20700, loss = 4.43791
+I0610 18:51:02.742630  1866 solver.cpp:244]     Train net output #0: loss/center = 167.175 (* 0.005 = 0.835876 loss)
+I0610 18:51:02.742640  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.29578 (* 1 = 3.29578 loss)
+I0610 18:51:02.742645  1866 sgd_solver.cpp:106] Iteration 20700, lr = 0.0049
+I0610 18:51:14.188201  1866 solver.cpp:228] Iteration 20800, loss = 4.42676
+I0610 18:51:14.188241  1866 solver.cpp:244]     Train net output #0: loss/center = 173.155 (* 0.005 = 0.865776 loss)
+I0610 18:51:14.188251  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.90442 (* 1 = 3.90442 loss)
+I0610 18:51:14.188256  1866 sgd_solver.cpp:106] Iteration 20800, lr = 0.0049
+I0610 18:51:25.629870  1866 solver.cpp:228] Iteration 20900, loss = 4.4106
+I0610 18:51:25.630067  1866 solver.cpp:244]     Train net output #0: loss/center = 186.249 (* 0.005 = 0.931244 loss)
+I0610 18:51:25.630079  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.51707 (* 1 = 3.51707 loss)
+I0610 18:51:25.630085  1866 sgd_solver.cpp:106] Iteration 20900, lr = 0.0049
+I0610 18:51:37.075639  1866 solver.cpp:228] Iteration 21000, loss = 4.40461
+I0610 18:51:37.075677  1866 solver.cpp:244]     Train net output #0: loss/center = 187.344 (* 0.005 = 0.936722 loss)
+I0610 18:51:37.075687  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.50774 (* 1 = 3.50774 loss)
+I0610 18:51:37.075692  1866 sgd_solver.cpp:106] Iteration 21000, lr = 0.0049
+I0610 18:51:48.524006  1866 solver.cpp:228] Iteration 21100, loss = 4.39668
+I0610 18:51:48.524046  1866 solver.cpp:244]     Train net output #0: loss/center = 179.105 (* 0.005 = 0.895523 loss)
+I0610 18:51:48.524055  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.79944 (* 1 = 3.79944 loss)
+I0610 18:51:48.524060  1866 sgd_solver.cpp:106] Iteration 21100, lr = 0.0049
+I0610 18:51:59.972831  1866 solver.cpp:228] Iteration 21200, loss = 4.38927
+I0610 18:51:59.973021  1866 solver.cpp:244]     Train net output #0: loss/center = 186.675 (* 0.005 = 0.933374 loss)
+I0610 18:51:59.973032  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.30416 (* 1 = 3.30416 loss)
+I0610 18:51:59.973038  1866 sgd_solver.cpp:106] Iteration 21200, lr = 0.0049
+I0610 18:52:11.413594  1866 solver.cpp:228] Iteration 21300, loss = 4.38125
+I0610 18:52:11.413635  1866 solver.cpp:244]     Train net output #0: loss/center = 177.909 (* 0.005 = 0.889544 loss)
+I0610 18:52:11.413643  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.14367 (* 1 = 3.14367 loss)
+I0610 18:52:11.413648  1866 sgd_solver.cpp:106] Iteration 21300, lr = 0.0049
+I0610 18:52:12.828354  1868 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface4.h5 idx 3
+I0610 18:52:12.831178  1866 hdf5_data_layer.cpp:424] Shuffled 128000 rows, first:74085
+I0610 18:52:22.910117  1866 solver.cpp:228] Iteration 21400, loss = 4.37039
+I0610 18:52:22.910157  1866 solver.cpp:244]     Train net output #0: loss/center = 185.014 (* 0.005 = 0.925072 loss)
+I0610 18:52:22.910166  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.16604 (* 1 = 3.16604 loss)
+I0610 18:52:22.910171  1866 sgd_solver.cpp:106] Iteration 21400, lr = 0.0049
+I0610 18:52:34.422724  1866 solver.cpp:228] Iteration 21500, loss = 4.34865
+I0610 18:52:34.422930  1866 solver.cpp:244]     Train net output #0: loss/center = 160.94 (* 0.005 = 0.8047 loss)
+I0610 18:52:34.422941  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.39129 (* 1 = 3.39129 loss)
+I0610 18:52:34.422946  1866 sgd_solver.cpp:106] Iteration 21500, lr = 0.0049
+I0610 18:52:45.933804  1866 solver.cpp:228] Iteration 21600, loss = 4.33768
+I0610 18:52:45.933845  1866 solver.cpp:244]     Train net output #0: loss/center = 192.035 (* 0.005 = 0.960177 loss)
+I0610 18:52:45.933853  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.50493 (* 1 = 3.50493 loss)
+I0610 18:52:45.933859  1866 sgd_solver.cpp:106] Iteration 21600, lr = 0.0049
+I0610 18:52:57.433744  1866 solver.cpp:228] Iteration 21700, loss = 4.32376
+I0610 18:52:57.433784  1866 solver.cpp:244]     Train net output #0: loss/center = 185.106 (* 0.005 = 0.925532 loss)
+I0610 18:52:57.433794  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.62763 (* 1 = 3.62763 loss)
+I0610 18:52:57.433799  1866 sgd_solver.cpp:106] Iteration 21700, lr = 0.0049
+I0610 18:53:08.939338  1866 solver.cpp:228] Iteration 21800, loss = 4.31173
+I0610 18:53:08.939543  1866 solver.cpp:244]     Train net output #0: loss/center = 191.403 (* 0.005 = 0.957013 loss)
+I0610 18:53:08.939555  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.21123 (* 1 = 3.21123 loss)
+I0610 18:53:08.939561  1866 sgd_solver.cpp:106] Iteration 21800, lr = 0.0049
+I0610 18:53:20.447906  1866 solver.cpp:228] Iteration 21900, loss = 4.30301
+I0610 18:53:20.447945  1866 solver.cpp:244]     Train net output #0: loss/center = 188.732 (* 0.005 = 0.943659 loss)
+I0610 18:53:20.447954  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.30417 (* 1 = 3.30417 loss)
+I0610 18:53:20.447960  1866 sgd_solver.cpp:106] Iteration 21900, lr = 0.0049
+I0610 18:53:31.953863  1866 solver.cpp:228] Iteration 22000, loss = 4.2945
+I0610 18:53:31.953900  1866 solver.cpp:244]     Train net output #0: loss/center = 191.986 (* 0.005 = 0.95993 loss)
+I0610 18:53:31.953909  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.79523 (* 1 = 3.79523 loss)
+I0610 18:53:31.953914  1866 sgd_solver.cpp:106] Iteration 22000, lr = 0.0049
+I0610 18:53:43.472379  1866 solver.cpp:228] Iteration 22100, loss = 4.2901
+I0610 18:53:43.472576  1866 solver.cpp:244]     Train net output #0: loss/center = 196.781 (* 0.005 = 0.983903 loss)
+I0610 18:53:43.472589  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.60068 (* 1 = 3.60068 loss)
+I0610 18:53:43.472594  1866 sgd_solver.cpp:106] Iteration 22100, lr = 0.0049
+I0610 18:53:54.981884  1866 solver.cpp:228] Iteration 22200, loss = 4.29108
+I0610 18:53:54.981922  1866 solver.cpp:244]     Train net output #0: loss/center = 174.875 (* 0.005 = 0.874373 loss)
+I0610 18:53:54.981931  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.46595 (* 1 = 3.46595 loss)
+I0610 18:53:54.981936  1866 sgd_solver.cpp:106] Iteration 22200, lr = 0.0049
+I0610 18:54:06.487798  1866 solver.cpp:228] Iteration 22300, loss = 4.27963
+I0610 18:54:06.487838  1866 solver.cpp:244]     Train net output #0: loss/center = 182.109 (* 0.005 = 0.910543 loss)
+I0610 18:54:06.487848  1866 solver.cpp:244]     Train net output #1: loss/softmax = 2.96243 (* 1 = 2.96243 loss)
+I0610 18:54:06.487853  1866 sgd_solver.cpp:106] Iteration 22300, lr = 0.0049
+I0610 18:54:07.912217  1868 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface2.h5 idx 0
+I0610 18:54:07.914669  1866 hdf5_data_layer.cpp:424] Shuffled 110414 rows, first:23391
+I0610 18:54:17.941654  1866 solver.cpp:228] Iteration 22400, loss = 4.28438
+I0610 18:54:17.941841  1866 solver.cpp:244]     Train net output #0: loss/center = 174.255 (* 0.005 = 0.871276 loss)
+I0610 18:54:17.941854  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.67214 (* 1 = 3.67214 loss)
+I0610 18:54:17.941859  1866 sgd_solver.cpp:106] Iteration 22400, lr = 0.0049
+I0610 18:54:29.391911  1866 solver.cpp:228] Iteration 22500, loss = 4.30035
+I0610 18:54:29.391952  1866 solver.cpp:244]     Train net output #0: loss/center = 179.751 (* 0.005 = 0.898753 loss)
+I0610 18:54:29.391960  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.34255 (* 1 = 3.34255 loss)
+I0610 18:54:29.391965  1866 sgd_solver.cpp:106] Iteration 22500, lr = 0.0049
+I0610 18:54:40.845389  1866 solver.cpp:228] Iteration 22600, loss = 4.31709
+I0610 18:54:40.845432  1866 solver.cpp:244]     Train net output #0: loss/center = 187.756 (* 0.005 = 0.938782 loss)
+I0610 18:54:40.845443  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.13987 (* 1 = 3.13987 loss)
+I0610 18:54:40.845448  1866 sgd_solver.cpp:106] Iteration 22600, lr = 0.0049
+I0610 18:54:52.291209  1866 solver.cpp:228] Iteration 22700, loss = 4.31775
+I0610 18:54:52.291414  1866 solver.cpp:244]     Train net output #0: loss/center = 194.951 (* 0.005 = 0.974757 loss)
+I0610 18:54:52.291436  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.54239 (* 1 = 3.54239 loss)
+I0610 18:54:52.291443  1866 sgd_solver.cpp:106] Iteration 22700, lr = 0.0049
+I0610 18:55:03.743150  1866 solver.cpp:228] Iteration 22800, loss = 4.33316
+I0610 18:55:03.743191  1866 solver.cpp:244]     Train net output #0: loss/center = 186.905 (* 0.005 = 0.934527 loss)
+I0610 18:55:03.743201  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.54196 (* 1 = 3.54196 loss)
+I0610 18:55:03.743206  1866 sgd_solver.cpp:106] Iteration 22800, lr = 0.0049
+I0610 18:55:15.198907  1866 solver.cpp:228] Iteration 22900, loss = 4.33829
+I0610 18:55:15.198946  1866 solver.cpp:244]     Train net output #0: loss/center = 194.401 (* 0.005 = 0.972006 loss)
+I0610 18:55:15.198956  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.18058 (* 1 = 3.18058 loss)
+I0610 18:55:15.198961  1866 sgd_solver.cpp:106] Iteration 22900, lr = 0.0049
+I0610 18:55:26.650085  1866 solver.cpp:228] Iteration 23000, loss = 4.33686
+I0610 18:55:26.650287  1866 solver.cpp:244]     Train net output #0: loss/center = 187.97 (* 0.005 = 0.939851 loss)
+I0610 18:55:26.650300  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.85234 (* 1 = 3.85234 loss)
+I0610 18:55:26.650305  1866 sgd_solver.cpp:106] Iteration 23000, lr = 0.0049
+I0610 18:55:38.107079  1866 solver.cpp:228] Iteration 23100, loss = 4.31556
+I0610 18:55:38.107117  1866 solver.cpp:244]     Train net output #0: loss/center = 187.589 (* 0.005 = 0.937944 loss)
+I0610 18:55:38.107127  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.59647 (* 1 = 3.59647 loss)
+I0610 18:55:38.107132  1866 sgd_solver.cpp:106] Iteration 23100, lr = 0.0049
+I0610 18:55:46.619784  1868 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface1.h5 idx 1
+I0610 18:55:46.622531  1866 hdf5_data_layer.cpp:424] Shuffled 128000 rows, first:3295
+I0610 18:55:49.566805  1866 solver.cpp:228] Iteration 23200, loss = 4.29318
+I0610 18:55:49.566844  1866 solver.cpp:244]     Train net output #0: loss/center = 193.516 (* 0.005 = 0.967578 loss)
+I0610 18:55:49.566854  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.00859 (* 1 = 3.00859 loss)
+I0610 18:55:49.566859  1866 sgd_solver.cpp:106] Iteration 23200, lr = 0.0049
+I0610 18:56:01.075778  1866 solver.cpp:228] Iteration 23300, loss = 4.23925
+I0610 18:56:01.075958  1866 solver.cpp:244]     Train net output #0: loss/center = 174.681 (* 0.005 = 0.873406 loss)
+I0610 18:56:01.075970  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.14996 (* 1 = 3.14996 loss)
+I0610 18:56:01.075976  1866 sgd_solver.cpp:106] Iteration 23300, lr = 0.0049
+I0610 18:56:12.581121  1866 solver.cpp:228] Iteration 23400, loss = 4.1808
+I0610 18:56:12.581162  1866 solver.cpp:244]     Train net output #0: loss/center = 192.198 (* 0.005 = 0.96099 loss)
+I0610 18:56:12.581171  1866 solver.cpp:244]     Train net output #1: loss/softmax = 2.87156 (* 1 = 2.87156 loss)
+I0610 18:56:12.581176  1866 sgd_solver.cpp:106] Iteration 23400, lr = 0.0049
+I0610 18:56:24.096549  1866 solver.cpp:228] Iteration 23500, loss = 4.12413
+I0610 18:56:24.096590  1866 solver.cpp:244]     Train net output #0: loss/center = 191.888 (* 0.005 = 0.959438 loss)
+I0610 18:56:24.096598  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.11846 (* 1 = 3.11846 loss)
+I0610 18:56:24.096603  1866 sgd_solver.cpp:106] Iteration 23500, lr = 0.0049
+I0610 18:56:35.611212  1866 solver.cpp:228] Iteration 23600, loss = 4.07751
+I0610 18:56:35.611436  1866 solver.cpp:244]     Train net output #0: loss/center = 208.051 (* 0.005 = 1.04026 loss)
+I0610 18:56:35.611449  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.41649 (* 1 = 3.41649 loss)
+I0610 18:56:35.611455  1866 sgd_solver.cpp:106] Iteration 23600, lr = 0.0049
+I0610 18:56:47.115209  1866 solver.cpp:228] Iteration 23700, loss = 4.04685
+I0610 18:56:47.115250  1866 solver.cpp:244]     Train net output #0: loss/center = 193.485 (* 0.005 = 0.967424 loss)
+I0610 18:56:47.115259  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.45527 (* 1 = 3.45527 loss)
+I0610 18:56:47.115264  1866 sgd_solver.cpp:106] Iteration 23700, lr = 0.0049
+I0610 18:56:58.630973  1866 solver.cpp:228] Iteration 23800, loss = 4.04492
+I0610 18:56:58.631011  1866 solver.cpp:244]     Train net output #0: loss/center = 207.134 (* 0.005 = 1.03567 loss)
+I0610 18:56:58.631019  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.32025 (* 1 = 3.32025 loss)
+I0610 18:56:58.631024  1866 sgd_solver.cpp:106] Iteration 23800, lr = 0.0049
+I0610 18:57:10.143496  1866 solver.cpp:228] Iteration 23900, loss = 4.04339
+I0610 18:57:10.143683  1866 solver.cpp:244]     Train net output #0: loss/center = 195.489 (* 0.005 = 0.977447 loss)
+I0610 18:57:10.143695  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.41141 (* 1 = 3.41141 loss)
+I0610 18:57:10.143702  1866 sgd_solver.cpp:106] Iteration 23900, lr = 0.0049
+I0610 18:57:21.650640  1866 solver.cpp:228] Iteration 24000, loss = 4.03799
+I0610 18:57:21.650679  1866 solver.cpp:244]     Train net output #0: loss/center = 179.968 (* 0.005 = 0.899841 loss)
+I0610 18:57:21.650688  1866 solver.cpp:244]     Train net output #1: loss/softmax = 2.98418 (* 1 = 2.98418 loss)
+I0610 18:57:21.650693  1866 sgd_solver.cpp:106] Iteration 24000, lr = 0.0049
+I0610 18:57:33.165421  1866 solver.cpp:228] Iteration 24100, loss = 4.03794
+I0610 18:57:33.165460  1866 solver.cpp:244]     Train net output #0: loss/center = 187.44 (* 0.005 = 0.937198 loss)
+I0610 18:57:33.165469  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.12392 (* 1 = 3.12392 loss)
+I0610 18:57:33.165474  1866 sgd_solver.cpp:106] Iteration 24100, lr = 0.0049
+I0610 18:57:41.721233  1868 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface3.h5 idx 2
+I0610 18:57:41.724082  1866 hdf5_data_layer.cpp:424] Shuffled 128000 rows, first:92397
+I0610 18:57:44.654840  1866 solver.cpp:228] Iteration 24200, loss = 4.04758
+I0610 18:57:44.654878  1866 solver.cpp:244]     Train net output #0: loss/center = 179.356 (* 0.005 = 0.896778 loss)
+I0610 18:57:44.654887  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.10716 (* 1 = 3.10716 loss)
+I0610 18:57:44.654892  1866 sgd_solver.cpp:106] Iteration 24200, lr = 0.0049
+I0610 18:57:56.104567  1866 solver.cpp:228] Iteration 24300, loss = 4.05671
+I0610 18:57:56.104606  1866 solver.cpp:244]     Train net output #0: loss/center = 191.206 (* 0.005 = 0.956028 loss)
+I0610 18:57:56.104616  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.14948 (* 1 = 3.14948 loss)
+I0610 18:57:56.104622  1866 sgd_solver.cpp:106] Iteration 24300, lr = 0.0049
+I0610 18:58:07.558879  1866 solver.cpp:228] Iteration 24400, loss = 4.07048
+I0610 18:58:07.558920  1866 solver.cpp:244]     Train net output #0: loss/center = 187.059 (* 0.005 = 0.935296 loss)
+I0610 18:58:07.558929  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.43112 (* 1 = 3.43112 loss)
+I0610 18:58:07.558934  1866 sgd_solver.cpp:106] Iteration 24400, lr = 0.0049
+I0610 18:58:19.010499  1866 solver.cpp:228] Iteration 24500, loss = 4.08926
+I0610 18:58:19.010723  1866 solver.cpp:244]     Train net output #0: loss/center = 196.778 (* 0.005 = 0.98389 loss)
+I0610 18:58:19.010735  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.29461 (* 1 = 3.29461 loss)
+I0610 18:58:19.010741  1866 sgd_solver.cpp:106] Iteration 24500, lr = 0.0049
+I0610 18:58:30.465401  1866 solver.cpp:228] Iteration 24600, loss = 4.09554
+I0610 18:58:30.465442  1866 solver.cpp:244]     Train net output #0: loss/center = 184.647 (* 0.005 = 0.923235 loss)
+I0610 18:58:30.465452  1866 solver.cpp:244]     Train net output #1: loss/softmax = 2.78916 (* 1 = 2.78916 loss)
+I0610 18:58:30.465457  1866 sgd_solver.cpp:106] Iteration 24600, lr = 0.0049
+I0610 18:58:41.919425  1866 solver.cpp:228] Iteration 24700, loss = 4.09114
+I0610 18:58:41.919463  1866 solver.cpp:244]     Train net output #0: loss/center = 184.511 (* 0.005 = 0.922556 loss)
+I0610 18:58:41.919472  1866 solver.cpp:244]     Train net output #1: loss/softmax = 2.90398 (* 1 = 2.90398 loss)
+I0610 18:58:41.919477  1866 sgd_solver.cpp:106] Iteration 24700, lr = 0.0049
+I0610 18:58:53.378929  1866 solver.cpp:228] Iteration 24800, loss = 4.0923
+I0610 18:58:53.379113  1866 solver.cpp:244]     Train net output #0: loss/center = 189.493 (* 0.005 = 0.947464 loss)
+I0610 18:58:53.379125  1866 solver.cpp:244]     Train net output #1: loss/softmax = 2.95786 (* 1 = 2.95786 loss)
+I0610 18:58:53.379130  1866 sgd_solver.cpp:106] Iteration 24800, lr = 0.0049
+I0610 18:59:04.823683  1866 solver.cpp:228] Iteration 24900, loss = 4.089
+I0610 18:59:04.823722  1866 solver.cpp:244]     Train net output #0: loss/center = 184.118 (* 0.005 = 0.920591 loss)
+I0610 18:59:04.823731  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.30199 (* 1 = 3.30199 loss)
+I0610 18:59:04.823737  1866 sgd_solver.cpp:106] Iteration 24900, lr = 0.0049
+I0610 18:59:16.165169  1866 solver.cpp:454] Snapshotting to binary proto file shallow_iter_25000.caffemodel
+I0610 18:59:16.793838  1866 sgd_solver.cpp:273] Snapshotting solver state to binary proto file shallow_iter_25000.solverstate
+I0610 18:59:17.564528  1866 solver.cpp:228] Iteration 25000, loss = 4.07098
+I0610 18:59:17.564574  1866 solver.cpp:244]     Train net output #0: loss/center = 206.856 (* 0.005 = 1.03428 loss)
+I0610 18:59:17.564584  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.17447 (* 1 = 3.17447 loss)
+I0610 18:59:17.564592  1866 sgd_solver.cpp:106] Iteration 25000, lr = 0.0049
+I0610 18:59:29.013214  1866 solver.cpp:228] Iteration 25100, loss = 4.06414
+I0610 18:59:29.013406  1866 solver.cpp:244]     Train net output #0: loss/center = 206.77 (* 0.005 = 1.03385 loss)
+I0610 18:59:29.013428  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.31332 (* 1 = 3.31332 loss)
+I0610 18:59:29.013437  1866 sgd_solver.cpp:106] Iteration 25100, lr = 0.0049
+I0610 18:59:37.534528  1868 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface4.h5 idx 3
+I0610 18:59:37.537271  1866 hdf5_data_layer.cpp:424] Shuffled 128000 rows, first:25280
+I0610 18:59:40.481986  1866 solver.cpp:228] Iteration 25200, loss = 4.0602
+I0610 18:59:40.482024  1866 solver.cpp:244]     Train net output #0: loss/center = 180.897 (* 0.005 = 0.904485 loss)
+I0610 18:59:40.482033  1866 solver.cpp:244]     Train net output #1: loss/softmax = 2.94775 (* 1 = 2.94775 loss)
+I0610 18:59:40.482038  1866 sgd_solver.cpp:106] Iteration 25200, lr = 0.0049
+I0610 18:59:51.992584  1866 solver.cpp:228] Iteration 25300, loss = 4.04334
+I0610 18:59:51.992624  1866 solver.cpp:244]     Train net output #0: loss/center = 188.603 (* 0.005 = 0.943016 loss)
+I0610 18:59:51.992632  1866 solver.cpp:244]     Train net output #1: loss/softmax = 2.9383 (* 1 = 2.9383 loss)
+I0610 18:59:51.992637  1866 sgd_solver.cpp:106] Iteration 25300, lr = 0.0049
+I0610 19:00:03.506501  1866 solver.cpp:228] Iteration 25400, loss = 4.03987
+I0610 19:00:03.506693  1866 solver.cpp:244]     Train net output #0: loss/center = 193.223 (* 0.005 = 0.966116 loss)
+I0610 19:00:03.506705  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.07207 (* 1 = 3.07207 loss)
+I0610 19:00:03.506711  1866 sgd_solver.cpp:106] Iteration 25400, lr = 0.0049
+I0610 19:00:15.013823  1866 solver.cpp:228] Iteration 25500, loss = 4.04486
+I0610 19:00:15.013862  1866 solver.cpp:244]     Train net output #0: loss/center = 195.775 (* 0.005 = 0.978877 loss)
+I0610 19:00:15.013871  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.39117 (* 1 = 3.39117 loss)
+I0610 19:00:15.013876  1866 sgd_solver.cpp:106] Iteration 25500, lr = 0.0049
+I0610 19:00:26.521265  1866 solver.cpp:228] Iteration 25600, loss = 4.03747
+I0610 19:00:26.521303  1866 solver.cpp:244]     Train net output #0: loss/center = 172.099 (* 0.005 = 0.860496 loss)
+I0610 19:00:26.521313  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.09221 (* 1 = 3.09221 loss)
+I0610 19:00:26.521318  1866 sgd_solver.cpp:106] Iteration 25600, lr = 0.0049
+I0610 19:00:38.029983  1866 solver.cpp:228] Iteration 25700, loss = 4.02895
+I0610 19:00:38.030199  1866 solver.cpp:244]     Train net output #0: loss/center = 182.57 (* 0.005 = 0.912848 loss)
+I0610 19:00:38.030210  1866 solver.cpp:244]     Train net output #1: loss/softmax = 2.95546 (* 1 = 2.95546 loss)
+I0610 19:00:38.030216  1866 sgd_solver.cpp:106] Iteration 25700, lr = 0.0049
+I0610 19:00:49.542592  1866 solver.cpp:228] Iteration 25800, loss = 4.02973
+I0610 19:00:49.542631  1866 solver.cpp:244]     Train net output #0: loss/center = 188.208 (* 0.005 = 0.94104 loss)
+I0610 19:00:49.542640  1866 solver.cpp:244]     Train net output #1: loss/softmax = 2.87343 (* 1 = 2.87343 loss)
+I0610 19:00:49.542645  1866 sgd_solver.cpp:106] Iteration 25800, lr = 0.0049
+I0610 19:01:01.046984  1866 solver.cpp:228] Iteration 25900, loss = 4.02045
+I0610 19:01:01.047024  1866 solver.cpp:244]     Train net output #0: loss/center = 182.113 (* 0.005 = 0.910565 loss)
+I0610 19:01:01.047034  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.22114 (* 1 = 3.22114 loss)
+I0610 19:01:01.047039  1866 sgd_solver.cpp:106] Iteration 25900, lr = 0.0049
+I0610 19:01:12.545742  1866 solver.cpp:228] Iteration 26000, loss = 4.00533
+I0610 19:01:12.545940  1866 solver.cpp:244]     Train net output #0: loss/center = 178.048 (* 0.005 = 0.89024 loss)
+I0610 19:01:12.545953  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.17539 (* 1 = 3.17539 loss)
+I0610 19:01:12.545958  1866 sgd_solver.cpp:106] Iteration 26000, lr = 0.0049
+I0610 19:01:24.058961  1866 solver.cpp:228] Iteration 26100, loss = 4.00549
+I0610 19:01:24.059001  1866 solver.cpp:244]     Train net output #0: loss/center = 186.669 (* 0.005 = 0.933343 loss)
+I0610 19:01:24.059010  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.11052 (* 1 = 3.11052 loss)
+I0610 19:01:24.059015  1866 sgd_solver.cpp:106] Iteration 26100, lr = 0.0049
+I0610 19:01:32.617930  1868 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface2.h5 idx 0
+I0610 19:01:32.620319  1866 hdf5_data_layer.cpp:424] Shuffled 110414 rows, first:71637
+I0610 19:01:35.550374  1866 solver.cpp:228] Iteration 26200, loss = 4.008
+I0610 19:01:35.550410  1866 solver.cpp:244]     Train net output #0: loss/center = 191.489 (* 0.005 = 0.957444 loss)
+I0610 19:01:35.550431  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.15181 (* 1 = 3.15181 loss)
+I0610 19:01:35.550436  1866 sgd_solver.cpp:106] Iteration 26200, lr = 0.0049
+I0610 19:01:47.004592  1866 solver.cpp:228] Iteration 26300, loss = 4.00625
+I0610 19:01:47.004782  1866 solver.cpp:244]     Train net output #0: loss/center = 183.399 (* 0.005 = 0.916993 loss)
+I0610 19:01:47.004794  1866 solver.cpp:244]     Train net output #1: loss/softmax = 2.60107 (* 1 = 2.60107 loss)
+I0610 19:01:47.004801  1866 sgd_solver.cpp:106] Iteration 26300, lr = 0.0049
+I0610 19:01:58.464237  1866 solver.cpp:228] Iteration 26400, loss = 4.00859
+I0610 19:01:58.464277  1866 solver.cpp:244]     Train net output #0: loss/center = 186.286 (* 0.005 = 0.931432 loss)
+I0610 19:01:58.464285  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.10671 (* 1 = 3.10671 loss)
+I0610 19:01:58.464290  1866 sgd_solver.cpp:106] Iteration 26400, lr = 0.0049
+I0610 19:02:09.925833  1866 solver.cpp:228] Iteration 26500, loss = 4.01805
+I0610 19:02:09.925873  1866 solver.cpp:244]     Train net output #0: loss/center = 196.418 (* 0.005 = 0.982091 loss)
+I0610 19:02:09.925882  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.48483 (* 1 = 3.48483 loss)
+I0610 19:02:09.925887  1866 sgd_solver.cpp:106] Iteration 26500, lr = 0.0049
+I0610 19:02:21.375851  1866 solver.cpp:228] Iteration 26600, loss = 4.02227
+I0610 19:02:21.376072  1866 solver.cpp:244]     Train net output #0: loss/center = 197.034 (* 0.005 = 0.985171 loss)
+I0610 19:02:21.376085  1866 solver.cpp:244]     Train net output #1: loss/softmax = 2.9715 (* 1 = 2.9715 loss)
+I0610 19:02:21.376091  1866 sgd_solver.cpp:106] Iteration 26600, lr = 0.0049
+I0610 19:02:32.832710  1866 solver.cpp:228] Iteration 26700, loss = 4.00995
+I0610 19:02:32.832747  1866 solver.cpp:244]     Train net output #0: loss/center = 209.348 (* 0.005 = 1.04674 loss)
+I0610 19:02:32.832756  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.00536 (* 1 = 3.00536 loss)
+I0610 19:02:32.832762  1866 sgd_solver.cpp:106] Iteration 26700, lr = 0.0049
+I0610 19:02:44.277643  1866 solver.cpp:228] Iteration 26800, loss = 4.00616
+I0610 19:02:44.277683  1866 solver.cpp:244]     Train net output #0: loss/center = 195.934 (* 0.005 = 0.979668 loss)
+I0610 19:02:44.277693  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.09234 (* 1 = 3.09234 loss)
+I0610 19:02:44.277698  1866 sgd_solver.cpp:106] Iteration 26800, lr = 0.0049
+I0610 19:02:55.729681  1866 solver.cpp:228] Iteration 26900, loss = 3.99671
+I0610 19:02:55.729881  1866 solver.cpp:244]     Train net output #0: loss/center = 199.611 (* 0.005 = 0.998053 loss)
+I0610 19:02:55.729893  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.3201 (* 1 = 3.3201 loss)
+I0610 19:02:55.729898  1866 sgd_solver.cpp:106] Iteration 26900, lr = 0.0049
+I0610 19:03:07.174585  1866 solver.cpp:228] Iteration 27000, loss = 3.9963
+I0610 19:03:07.174624  1866 solver.cpp:244]     Train net output #0: loss/center = 193.914 (* 0.005 = 0.969572 loss)
+I0610 19:03:07.174633  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.6078 (* 1 = 3.6078 loss)
+I0610 19:03:07.174638  1866 sgd_solver.cpp:106] Iteration 27000, lr = 0.0049
+I0610 19:03:11.453670  1868 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface3.h5 idx 1
+I0610 19:03:11.456409  1866 hdf5_data_layer.cpp:424] Shuffled 128000 rows, first:56124
+I0610 19:03:18.655511  1866 solver.cpp:228] Iteration 27100, loss = 3.96028
+I0610 19:03:18.655550  1866 solver.cpp:244]     Train net output #0: loss/center = 217.24 (* 0.005 = 1.0862 loss)
+I0610 19:03:18.655560  1866 solver.cpp:244]     Train net output #1: loss/softmax = 2.90331 (* 1 = 2.90331 loss)
+I0610 19:03:18.655565  1866 sgd_solver.cpp:106] Iteration 27100, lr = 0.0049
+I0610 19:03:30.166241  1866 solver.cpp:228] Iteration 27200, loss = 3.93738
+I0610 19:03:30.166407  1866 solver.cpp:244]     Train net output #0: loss/center = 175.383 (* 0.005 = 0.876916 loss)
+I0610 19:03:30.166429  1866 solver.cpp:244]     Train net output #1: loss/softmax = 2.79166 (* 1 = 2.79166 loss)
+I0610 19:03:30.166436  1866 sgd_solver.cpp:106] Iteration 27200, lr = 0.0049
+I0610 19:03:41.679630  1866 solver.cpp:228] Iteration 27300, loss = 3.89943
+I0610 19:03:41.679668  1866 solver.cpp:244]     Train net output #0: loss/center = 171.715 (* 0.005 = 0.858575 loss)
+I0610 19:03:41.679677  1866 solver.cpp:244]     Train net output #1: loss/softmax = 2.60352 (* 1 = 2.60352 loss)
+I0610 19:03:41.679683  1866 sgd_solver.cpp:106] Iteration 27300, lr = 0.0049
+I0610 19:03:53.193058  1866 solver.cpp:228] Iteration 27400, loss = 3.86658
+I0610 19:03:53.193099  1866 solver.cpp:244]     Train net output #0: loss/center = 171.376 (* 0.005 = 0.856878 loss)
+I0610 19:03:53.193107  1866 solver.cpp:244]     Train net output #1: loss/softmax = 2.7391 (* 1 = 2.7391 loss)
+I0610 19:03:53.193114  1866 sgd_solver.cpp:106] Iteration 27400, lr = 0.0049
+I0610 19:04:04.692804  1866 solver.cpp:228] Iteration 27500, loss = 3.82664
+I0610 19:04:04.693023  1866 solver.cpp:244]     Train net output #0: loss/center = 187.848 (* 0.005 = 0.939237 loss)
+I0610 19:04:04.693035  1866 solver.cpp:244]     Train net output #1: loss/softmax = 2.69963 (* 1 = 2.69963 loss)
+I0610 19:04:04.693042  1866 sgd_solver.cpp:106] Iteration 27500, lr = 0.0049
+I0610 19:04:16.206773  1866 solver.cpp:228] Iteration 27600, loss = 3.8222
+I0610 19:04:16.206811  1866 solver.cpp:244]     Train net output #0: loss/center = 189.267 (* 0.005 = 0.946333 loss)
+I0610 19:04:16.206820  1866 solver.cpp:244]     Train net output #1: loss/softmax = 2.76942 (* 1 = 2.76942 loss)
+I0610 19:04:16.206825  1866 sgd_solver.cpp:106] Iteration 27600, lr = 0.0049
+I0610 19:04:27.723834  1866 solver.cpp:228] Iteration 27700, loss = 3.81604
+I0610 19:04:27.723872  1866 solver.cpp:244]     Train net output #0: loss/center = 196.04 (* 0.005 = 0.980199 loss)
+I0610 19:04:27.723882  1866 solver.cpp:244]     Train net output #1: loss/softmax = 2.67044 (* 1 = 2.67044 loss)
+I0610 19:04:27.723887  1866 sgd_solver.cpp:106] Iteration 27700, lr = 0.0049
+I0610 19:04:39.236479  1866 solver.cpp:228] Iteration 27800, loss = 3.81658
+I0610 19:04:39.236670  1866 solver.cpp:244]     Train net output #0: loss/center = 185.555 (* 0.005 = 0.927774 loss)
+I0610 19:04:39.236682  1866 solver.cpp:244]     Train net output #1: loss/softmax = 2.51535 (* 1 = 2.51535 loss)
+I0610 19:04:39.236688  1866 sgd_solver.cpp:106] Iteration 27800, lr = 0.0049
+I0610 19:04:50.747593  1866 solver.cpp:228] Iteration 27900, loss = 3.81946
+I0610 19:04:50.747632  1866 solver.cpp:244]     Train net output #0: loss/center = 197.39 (* 0.005 = 0.986948 loss)
+I0610 19:04:50.747642  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.1271 (* 1 = 3.1271 loss)
+I0610 19:04:50.747647  1866 sgd_solver.cpp:106] Iteration 27900, lr = 0.0049
+I0610 19:05:02.259863  1866 solver.cpp:228] Iteration 28000, loss = 3.80941
+I0610 19:05:02.259903  1866 solver.cpp:244]     Train net output #0: loss/center = 200.587 (* 0.005 = 1.00293 loss)
+I0610 19:05:02.259913  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.03714 (* 1 = 3.03714 loss)
+I0610 19:05:02.259918  1866 sgd_solver.cpp:106] Iteration 28000, lr = 0.0049
+I0610 19:05:06.563943  1868 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface1.h5 idx 2
+I0610 19:05:06.566689  1866 hdf5_data_layer.cpp:424] Shuffled 128000 rows, first:100870
+I0610 19:05:13.735188  1866 solver.cpp:228] Iteration 28100, loss = 3.80022
+I0610 19:05:13.735376  1866 solver.cpp:244]     Train net output #0: loss/center = 207.109 (* 0.005 = 1.03554 loss)
+I0610 19:05:13.735388  1866 solver.cpp:244]     Train net output #1: loss/softmax = 2.83625 (* 1 = 2.83625 loss)
+I0610 19:05:13.735394  1866 sgd_solver.cpp:106] Iteration 28100, lr = 0.0049
+I0610 19:05:25.180207  1866 solver.cpp:228] Iteration 28200, loss = 3.80173
+I0610 19:05:25.180248  1866 solver.cpp:244]     Train net output #0: loss/center = 196.076 (* 0.005 = 0.980379 loss)
+I0610 19:05:25.180258  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.38003 (* 1 = 3.38003 loss)
+I0610 19:05:25.180263  1866 sgd_solver.cpp:106] Iteration 28200, lr = 0.0049
+I0610 19:05:36.630810  1866 solver.cpp:228] Iteration 28300, loss = 3.79271
+I0610 19:05:36.630851  1866 solver.cpp:244]     Train net output #0: loss/center = 169.416 (* 0.005 = 0.84708 loss)
+I0610 19:05:36.630861  1866 solver.cpp:244]     Train net output #1: loss/softmax = 2.57947 (* 1 = 2.57947 loss)
+I0610 19:05:36.630866  1866 sgd_solver.cpp:106] Iteration 28300, lr = 0.0049
+I0610 19:05:48.098731  1866 solver.cpp:228] Iteration 28400, loss = 3.7825
+I0610 19:05:48.098935  1866 solver.cpp:244]     Train net output #0: loss/center = 197.305 (* 0.005 = 0.986524 loss)
+I0610 19:05:48.098948  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.09404 (* 1 = 3.09404 loss)
+I0610 19:05:48.098954  1866 sgd_solver.cpp:106] Iteration 28400, lr = 0.0049
+I0610 19:05:59.551185  1866 solver.cpp:228] Iteration 28500, loss = 3.78016
+I0610 19:05:59.551224  1866 solver.cpp:244]     Train net output #0: loss/center = 174.861 (* 0.005 = 0.874307 loss)
+I0610 19:05:59.551234  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.20921 (* 1 = 3.20921 loss)
+I0610 19:05:59.551239  1866 sgd_solver.cpp:106] Iteration 28500, lr = 0.0049
+I0610 19:06:10.998165  1866 solver.cpp:228] Iteration 28600, loss = 3.77867
+I0610 19:06:10.998204  1866 solver.cpp:244]     Train net output #0: loss/center = 204.432 (* 0.005 = 1.02216 loss)
+I0610 19:06:10.998214  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.14746 (* 1 = 3.14746 loss)
+I0610 19:06:10.998219  1866 sgd_solver.cpp:106] Iteration 28600, lr = 0.0049
+I0610 19:06:22.446956  1866 solver.cpp:228] Iteration 28700, loss = 3.76607
+I0610 19:06:22.447152  1866 solver.cpp:244]     Train net output #0: loss/center = 173.768 (* 0.005 = 0.868841 loss)
+I0610 19:06:22.447165  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.22818 (* 1 = 3.22818 loss)
+I0610 19:06:22.447170  1866 sgd_solver.cpp:106] Iteration 28700, lr = 0.0049
+I0610 19:06:33.898900  1866 solver.cpp:228] Iteration 28800, loss = 3.77483
+I0610 19:06:33.898941  1866 solver.cpp:244]     Train net output #0: loss/center = 182.127 (* 0.005 = 0.910633 loss)
+I0610 19:06:33.898949  1866 solver.cpp:244]     Train net output #1: loss/softmax = 2.71157 (* 1 = 2.71157 loss)
+I0610 19:06:33.898954  1866 sgd_solver.cpp:106] Iteration 28800, lr = 0.0049
+I0610 19:06:45.364553  1866 solver.cpp:228] Iteration 28900, loss = 3.77798
+I0610 19:06:45.364593  1866 solver.cpp:244]     Train net output #0: loss/center = 203.109 (* 0.005 = 1.01554 loss)
+I0610 19:06:45.364603  1866 solver.cpp:244]     Train net output #1: loss/softmax = 2.98724 (* 1 = 2.98724 loss)
+I0610 19:06:45.364609  1866 sgd_solver.cpp:106] Iteration 28900, lr = 0.0049
+I0610 19:06:56.812332  1866 solver.cpp:228] Iteration 29000, loss = 3.78697
+I0610 19:06:56.812528  1866 solver.cpp:244]     Train net output #0: loss/center = 201.646 (* 0.005 = 1.00823 loss)
+I0610 19:06:56.812541  1866 solver.cpp:244]     Train net output #1: loss/softmax = 2.91154 (* 1 = 2.91154 loss)
+I0610 19:06:56.812546  1866 sgd_solver.cpp:106] Iteration 29000, lr = 0.0049
+I0610 19:07:01.088687  1868 hdf5_data_layer.cpp:128] Loading HDF5 file: ../data/webface4.h5 idx 3
+I0610 19:07:01.091557  1866 hdf5_data_layer.cpp:424] Shuffled 128000 rows, first:55776
+I0610 19:07:08.286101  1866 solver.cpp:228] Iteration 29100, loss = 3.79179
+I0610 19:07:08.286140  1866 solver.cpp:244]     Train net output #0: loss/center = 189.979 (* 0.005 = 0.949894 loss)
+I0610 19:07:08.286149  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.11893 (* 1 = 3.11893 loss)
+I0610 19:07:08.286155  1866 sgd_solver.cpp:106] Iteration 29100, lr = 0.0049
+I0610 19:07:19.795691  1866 solver.cpp:228] Iteration 29200, loss = 3.80454
+I0610 19:07:19.795729  1866 solver.cpp:244]     Train net output #0: loss/center = 185.981 (* 0.005 = 0.929905 loss)
+I0610 19:07:19.795739  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.14012 (* 1 = 3.14012 loss)
+I0610 19:07:19.795744  1866 sgd_solver.cpp:106] Iteration 29200, lr = 0.0049
+I0610 19:07:31.298646  1866 solver.cpp:228] Iteration 29300, loss = 3.80591
+I0610 19:07:31.298840  1866 solver.cpp:244]     Train net output #0: loss/center = 187.222 (* 0.005 = 0.936108 loss)
+I0610 19:07:31.298851  1866 solver.cpp:244]     Train net output #1: loss/softmax = 2.81574 (* 1 = 2.81574 loss)
+I0610 19:07:31.298857  1866 sgd_solver.cpp:106] Iteration 29300, lr = 0.0049
+I0610 19:07:42.812557  1866 solver.cpp:228] Iteration 29400, loss = 3.79963
+I0610 19:07:42.812597  1866 solver.cpp:244]     Train net output #0: loss/center = 204.011 (* 0.005 = 1.02006 loss)
+I0610 19:07:42.812607  1866 solver.cpp:244]     Train net output #1: loss/softmax = 2.67105 (* 1 = 2.67105 loss)
+I0610 19:07:42.812613  1866 sgd_solver.cpp:106] Iteration 29400, lr = 0.0049
+I0610 19:07:54.328992  1866 solver.cpp:228] Iteration 29500, loss = 3.79852
+I0610 19:07:54.329030  1866 solver.cpp:244]     Train net output #0: loss/center = 191.991 (* 0.005 = 0.959955 loss)
+I0610 19:07:54.329040  1866 solver.cpp:244]     Train net output #1: loss/softmax = 2.85021 (* 1 = 2.85021 loss)
+I0610 19:07:54.329044  1866 sgd_solver.cpp:106] Iteration 29500, lr = 0.0049
+I0610 19:08:05.843583  1866 solver.cpp:228] Iteration 29600, loss = 3.79661
+I0610 19:08:05.843799  1866 solver.cpp:244]     Train net output #0: loss/center = 202.149 (* 0.005 = 1.01075 loss)
+I0610 19:08:05.843811  1866 solver.cpp:244]     Train net output #1: loss/softmax = 2.83536 (* 1 = 2.83536 loss)
+I0610 19:08:05.843817  1866 sgd_solver.cpp:106] Iteration 29600, lr = 0.0049
+I0610 19:08:17.357308  1866 solver.cpp:228] Iteration 29700, loss = 3.78661
+I0610 19:08:17.357347  1866 solver.cpp:244]     Train net output #0: loss/center = 197.687 (* 0.005 = 0.988437 loss)
+I0610 19:08:17.357357  1866 solver.cpp:244]     Train net output #1: loss/softmax = 2.58899 (* 1 = 2.58899 loss)
+I0610 19:08:17.357362  1866 sgd_solver.cpp:106] Iteration 29700, lr = 0.0049
+I0610 19:08:28.864187  1866 solver.cpp:228] Iteration 29800, loss = 3.78179
+I0610 19:08:28.864225  1866 solver.cpp:244]     Train net output #0: loss/center = 187.196 (* 0.005 = 0.935978 loss)
+I0610 19:08:28.864234  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.26374 (* 1 = 3.26374 loss)
+I0610 19:08:28.864239  1866 sgd_solver.cpp:106] Iteration 29800, lr = 0.0049
+I0610 19:08:40.372975  1866 solver.cpp:228] Iteration 29900, loss = 3.78841
+I0610 19:08:40.373157  1866 solver.cpp:244]     Train net output #0: loss/center = 203.967 (* 0.005 = 1.01983 loss)
+I0610 19:08:40.373168  1866 solver.cpp:244]     Train net output #1: loss/softmax = 3.35768 (* 1 = 3.35768 loss)
+I0610 19:08:40.373174  1866 sgd_solver.cpp:106] Iteration 29900, lr = 0.0049
+I0610 19:08:51.756117  1866 solver.cpp:454] Snapshotting to binary proto file shallow_iter_30000.caffemodel
+I0610 19:08:52.314549  1866 sgd_solver.cpp:273] Snapshotting solver state to binary proto file shallow_iter_30000.solverstate
+I0610 19:08:53.059882  1866 solver.cpp:317] Iteration 30000, loss = 3.78126
+I0610 19:08:53.059926  1866 solver.cpp:322] Optimization Done.
+I0610 19:08:53.059931  1866 caffe.cpp:254] Optimization Done.
+I0610 19:08:53.167950  1868 hdf5_data_layer.cpp:94] interrupted
